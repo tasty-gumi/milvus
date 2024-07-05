@@ -27,6 +27,7 @@ class ProtoParser {
     explicit ProtoParser(const Schema& schema) : schema(schema) {
     }
 
+
     std::unique_ptr<VectorPlanNode>
     PlanNodeFromProto(const proto::plan::PlanNode& plan_node_proto);
 
@@ -69,6 +70,10 @@ class ProtoParser {
 
     expr::TypedExprPtr
     ParseJsonContainsExprs(const proto::plan::JSONContainsExpr& expr_pb);
+
+    expr::TypedExprPtr
+    ParseGISFunctionFilterExprs(
+        const proto::plan::GISFunctionFilterExpr& expr_pb);
 
     expr::TypedExprPtr
     CreateAlwaysTrueExprs();

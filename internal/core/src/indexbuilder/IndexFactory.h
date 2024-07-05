@@ -17,6 +17,7 @@
 #include <string>
 
 #include "common/EasyAssert.h"
+#include "common/FieldDataInterface.h"
 #include "indexbuilder/IndexCreatorBase.h"
 #include "indexbuilder/ScalarIndexCreator.h"
 #include "indexbuilder/VecIndexCreator.h"
@@ -60,6 +61,7 @@ class IndexFactory {
             case DataType::VARCHAR:
             case DataType::STRING:
             case DataType::ARRAY:
+            case DataType::GEOSPATIAL:
                 return CreateScalarIndex(type, config, context);
 
             case DataType::VECTOR_FLOAT:

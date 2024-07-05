@@ -83,6 +83,7 @@ set(MILVUS_TEST_FILES
         test_timestamp_index.cpp
         test_tracer.cpp
         test_utils.cpp
+        test_H3_index.cpp
         )
 
 if ( INDEX_ENGINE STREQUAL "cardinal" )
