@@ -524,6 +524,8 @@ func DefaultValueColumn(name string, dataType entity.FieldType) (Column, error) 
 		return NewColumnVarChar(name, nil), nil
 	case entity.FieldTypeJSON:
 		return NewColumnJSONBytes(name, nil), nil
+	case entity.FieldTypeGeometry:
+		return NewColumnGeometryBytes(name, nil), nil
 
 	default:
 		return nil, fmt.Errorf("default value unsupported data type %s", dataType)

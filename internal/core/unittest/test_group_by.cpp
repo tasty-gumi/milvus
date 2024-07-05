@@ -10,6 +10,7 @@
 // or implied. See the License for the specific language governing permissions and limitations under the License
 
 #include <gtest/gtest.h>
+#include <cstdint>
 #include "common/Schema.h"
 #include "query/Plan.h"
 #include "segcore/SegmentSealedImpl.h"
@@ -95,7 +96,7 @@ TEST(GroupBY, SealedIndex) {
     size_t N = 50;
 
     //2. load raw data
-    auto raw_data = DataGen(schema, N, 42, 0, 8, 10, false, false);
+    auto raw_data = DataGen(schema, N, 42, 0, 8, 10, 10, false, false);
     auto fields = schema->get_fields();
     for (auto field_data : raw_data.raw_->fields_data()) {
         int64_t field_id = field_data.field_id();
@@ -447,7 +448,7 @@ TEST(GroupBY, SealedData) {
     size_t N = 100;
 
     //2. load raw data
-    auto raw_data = DataGen(schema, N, 42, 0, 8, 10, false, false);
+    auto raw_data = DataGen(schema, N, 42, 0, 8, 10, 10, false, false);
     auto fields = schema->get_fields();
     for (auto field_data : raw_data.raw_->fields_data()) {
         int64_t field_id = field_data.field_id();
@@ -539,13 +540,28 @@ TEST(GroupBY, Reduce) {
     //1. load raw data
     size_t N = 100;
     uint64_t seed = 512;
-    uint64_t ts_offset = 0;
+    uint64_t pk_offset = 0;
+    uint64_t ts_offset = 8;
     int repeat_count_1 = 2;
     int repeat_count_2 = 5;
-    auto raw_data1 =
-        DataGen(schema, N, seed, ts_offset, repeat_count_1, false, false);
-    auto raw_data2 =
-        DataGen(schema, N, seed, ts_offset, repeat_count_2, false, false);
+    auto raw_data1 = DataGen(schema,
+                             N,
+                             seed,
+                             pk_offset,
+                             ts_offset,
+                             repeat_count_1,
+                             10,
+                             false,
+                             false);
+    auto raw_data2 = DataGen(schema,
+                             N,
+                             seed,
+                             pk_offset,
+                             ts_offset,
+                             repeat_count_2,
+                             10,
+                             false,
+                             false);
 
     auto fields = schema->get_fields();
     //load segment1 raw data
@@ -677,7 +693,7 @@ TEST(GroupBY, GrowingRawData) {
     int n_batch = 3;
     for (int i = 0; i < n_batch; i++) {
         auto data_set =
-            DataGen(schema, rows_per_batch, 42, 0, 8, 10, false, false);
+            DataGen(schema, rows_per_batch, 42, 0, 8, 10, 10, false, false);
         auto offset = segment_growing_impl->PreInsert(rows_per_batch);
         segment_growing_impl->Insert(offset,
                                      rows_per_batch,
@@ -776,7 +792,7 @@ TEST(GroupBY, GrowingIndex) {
     int n_batch = 10;
     for (int i = 0; i < n_batch; i++) {
         auto data_set =
-            DataGen(schema, rows_per_batch, 42, 0, 8, 10, false, false);
+            DataGen(schema, rows_per_batch, 42, 0, 8, 10, 10, false, false);
         auto offset = segment_growing_impl->PreInsert(rows_per_batch);
         segment_growing_impl->Insert(offset,
                                      rows_per_batch,
