@@ -204,9 +204,21 @@ FieldDataImpl<Type, is_type_entire_row>::FillFieldData(
                 values[index] =
                     Json(simdjson::padded_string(json_array->GetString(index)));
             }
-            if (nullable_) {
-                return FillFieldData(
-                    values.data(), array->null_bitmap_data(), element_count);
+            return FillFieldData(values.data(), element_count);
+        }
+        case DataType::GEOSPATIAL: {
+            AssertInfo(array->type()->id() == arrow::Type::type::BINARY,
+                       "inconsistent data type");
+            auto geospatial_array =
+                std::dynamic_pointer_cast<arrow::BinaryArray>(array);
+            std::vector<GeoSpatial> values(element_count);
+            for (size_t index = 0; index < element_count; ++index) {
+                int length = 0;
+                const unsigned char* wkb_data =
+                    reinterpret_cast<const unsigned char*>(
+                        geospatial_array->GetValue(index, &length));
+                values[index] =
+                    GeoSpatial(wkb_data, static_cast<size_t>(length));
             }
             return FillFieldData(values.data(), element_count);
         }
@@ -275,6 +287,7 @@ template class FieldDataImpl<float, true>;
 template class FieldDataImpl<double, true>;
 template class FieldDataImpl<std::string, true>;
 template class FieldDataImpl<Json, true>;
+template class FieldDataImpl<GeoSpatial, true>;
 template class FieldDataImpl<Array, true>;
 
 // vector data
@@ -312,6 +325,8 @@ InitScalarFieldData(const DataType& type, bool nullable, int64_t cap_rows) {
                 type, nullable, cap_rows);
         case DataType::JSON:
             return std::make_shared<FieldData<Json>>(type, nullable, cap_rows);
+        case DataType::GEOSPATIAL:
+            return std::make_shared<FieldData<GeoSpatial>>(type, cap_rows);
         default:
             PanicInfo(DataTypeInvalid,
                       "InitScalarFieldData not support data type " +
