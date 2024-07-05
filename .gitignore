@@ -104,3 +104,5 @@ internal/proto/**/*.pb.go
 internal/core/src/pb/*.pb.h
 internal/core/src/pb/*.pb.cc
 **/legacypb/*.pb.go
+
+rebuild_milvus.sh
