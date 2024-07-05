@@ -348,6 +348,8 @@ class ColumnBase {
                 break;
             case DataType::VARCHAR:
             case DataType::STRING:
+            // geo type consider as similar to string
+            case DataType::GEOSPATIAL:
                 padding_ = STRING_PADDING;
                 break;
             case DataType::ARRAY:
