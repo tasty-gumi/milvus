@@ -98,6 +98,16 @@ VectorBase::set_data_raw(ssize_t element_offset,
 
             return set_data_raw(element_offset, data_raw.data(), element_count);
         }
+        case DataType::GEOSPATIAL: {
+            auto& geospatial_data = FIELD_DATA(data, geospatial);
+            std::vector<GeoSpatial> data_raw{};
+            data_raw.reserve(geospatial_data.size());
+            for (auto& geospatial_bytes : geospatial_data) {
+                //this geospatial_bytes consider as wkt strings from milvus-proto
+                data_raw.emplace_back(GeoSpatial(geospatial_bytes));
+            }
+            return set_data_raw(element_offset, data_raw.data(), element_count);
+        }
         case DataType::ARRAY: {
             auto& array_data = FIELD_DATA(data, array);
             std::vector<Array> data_raw{};
