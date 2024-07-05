@@ -228,6 +228,16 @@ func FieldDataColumn(fd *schemapb.FieldData, begin, end int) (Column, error) {
 		}
 		return NewColumnJSONBytes(fd.GetFieldName(), data.JsonData.GetData()[begin:end]).WithIsDynamic(isDynamic), nil
 
+	case schemapb.DataType_Geometry:
+		data, ok := fd.GetScalars().GetData().(*schemapb.ScalarField_GeometryData)
+		if !ok {
+			return nil, errFieldDataTypeNotMatch
+		}
+		if end < 0 {
+			return NewColumnGeometryBytes(fd.GetFieldName(), data.GeometryData.GetData()[begin:]), nil
+		}
+		return NewColumnGeometryBytes(fd.GetFieldName(), data.GeometryData.GetData()[begin:end]), nil
+
 	case schemapb.DataType_FloatVector:
 		vectors := fd.GetVectors()
 		x, ok := vectors.GetData().(*schemapb.VectorField_FloatVector)
@@ -524,6 +534,8 @@ func DefaultValueColumn(name string, dataType entity.FieldType) (Column, error) 
 		return NewColumnVarChar(name, nil), nil
 	case entity.FieldTypeJSON:
 		return NewColumnJSONBytes(name, nil), nil
+	case entity.FieldTypeGeometry:
+		return NewColumnGeometryBytes(name, nil), nil
 
 	default:
 		return nil, fmt.Errorf("default value unsupported data type %s", dataType)

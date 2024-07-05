@@ -1256,7 +1256,7 @@ class TestIndexInvalid(TestcaseBase):
         # create index on JSON/Array field is not supported
         collection_w.create_index(ct.default_json_field_name,
                                   check_task=CheckTasks.err_res,
-                                  check_items={ct.err_code: 1100,
+                                  check_items={ct.err_code: 65535,
                                                ct.err_msg: "create index on JSON field is not supported"})
 
     @pytest.mark.tags(CaseLabel.L1)
