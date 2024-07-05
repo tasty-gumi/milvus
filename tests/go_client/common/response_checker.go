@@ -71,6 +71,8 @@ func EqualColumn(t *testing.T, columnA column.Column, columnB column.Column) {
 		case *column.ColumnJSONBytes:
 			require.ElementsMatch(t, columnA.(*column.ColumnJSONBytes).Data(), columnB.(*column.ColumnJSONBytes).Data())
 		}
+	case entity.FieldTypeGeometry:
+		require.ElementsMatch(t, columnA.(*column.ColumnGeometryBytes).Data(), columnB.(*column.ColumnGeometryBytes).Data())
 	case entity.FieldTypeFloatVector:
 		require.ElementsMatch(t, columnA.(*column.ColumnFloatVector).Data(), columnB.(*column.ColumnFloatVector).Data())
 	case entity.FieldTypeBinaryVector:
