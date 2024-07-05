@@ -43,6 +43,7 @@ class MilvusConan(ConanFile):
         "librdkafka/1.9.1",
         "abseil/20230125.3",
         "roaring/3.0.0",
+        "gdal/3.5.3"
     )
     generators = ("cmake", "cmake_find_package")
     default_options = {
@@ -76,6 +77,8 @@ class MilvusConan(ConanFile):
         "fmt:header_only": True,
         "onetbb:tbbmalloc": False,
         "onetbb:tbbproxy": False,
+        "gdal:shared": True,
+        "gdal:fPIC": True,
     }
 
     def configure(self):
