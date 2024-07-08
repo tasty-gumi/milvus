@@ -45,6 +45,7 @@
 #include "pb/schema.pb.h"
 #include "pb/segcore.pb.h"
 #include "Json.h"
+#include "GeoSpatial.h"
 
 #include "CustomBitset.h"
 
@@ -625,6 +626,9 @@ struct fmt::formatter<milvus::DataType> : formatter<string_view> {
                 break;
             case milvus::DataType::JSON:
                 name = "JSON";
+                break;
+            case milvus::DataType::GEOSPATIAL:
+                name = "GEOSPATIAL";
                 break;
             case milvus::DataType::ROW:
                 name = "ROW";
