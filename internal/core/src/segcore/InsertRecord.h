@@ -585,6 +585,11 @@ struct InsertRecord {
                                                         size_per_chunk);
                     break;
                 }
+                case DataType::GEOSPATIAL: {
+                    this->append_field_data<GeoSpatial>(field_id,
+                                                        size_per_chunk);
+                    break;
+                }
                 case DataType::ARRAY: {
                     this->append_data<Array>(field_id, size_per_chunk);
                     break;
