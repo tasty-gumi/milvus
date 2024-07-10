@@ -247,7 +247,8 @@ CreateArrowBuilder(DataType data_type) {
             return std::make_shared<arrow::StringBuilder>();
         }
         case DataType::ARRAY:
-        case DataType::JSON: {
+        case DataType::JSON:
+        case DataType::GEOSPATIAL: {
             return std::make_shared<arrow::BinaryBuilder>();
         }
         // sparse float vector doesn't require a dim
@@ -320,7 +321,8 @@ CreateArrowSchema(DataType data_type) {
             return arrow::schema({arrow::field("val", arrow::utf8())});
         }
         case DataType::ARRAY:
-        case DataType::JSON: {
+        case DataType::JSON:
+        case DataType::GEOSPATIAL: {
             return arrow::schema({arrow::field("val", arrow::binary())});
         }
         // sparse float vector doesn't require a dim
@@ -801,6 +803,9 @@ CreateFieldData(const DataType& type, int64_t dim, int64_t total_num_rows) {
                                                             total_num_rows);
         case DataType::JSON:
             return std::make_shared<FieldData<Json>>(type, total_num_rows);
+        case DataType::GEOSPATIAL:
+            return std::make_shared<FieldData<GeoSpatial>>(type,
+                                                           total_num_rows);
         case DataType::ARRAY:
             return std::make_shared<FieldData<Array>>(type, total_num_rows);
         case DataType::VECTOR_FLOAT:
