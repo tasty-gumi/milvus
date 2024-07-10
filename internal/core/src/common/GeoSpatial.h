@@ -1,11 +1,22 @@
+// Copyright (C) 2019-2020 Zilliz. All rights reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software distributed under the License
+// is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+// or implied. See the License for the specific language governing permissions and limitations under the License
+#pragma once
+
 #include <gdal.h>
 #include <ogr_geometry.h>
-#include <cstddef>
-#include <cstring>
 #include <string>
-#include <utility>
-#include <vector>
+#include <string_view>
 #include "log/Log.h"
+
+namespace milvus {
 
 class GeoSpatial {
  public:
@@ -20,7 +31,7 @@ class GeoSpatial {
     }
 
     explicit GeoSpatial(const void* wkb, size_t size)
-        : wkb_data_(static_cast<const unsigned char*>(wkb)), size_(size) {
+        : wkb_data_ro_(static_cast<const unsigned char*>(wkb)), size_(size) {
         OGRGeometryFactory::createFromWkb(wkb, nullptr, &geometry_, size);
         if (!geometry_) {
             LOG_WARN("[TH_DEBUG]ctr geospatial failed from wkb");
@@ -29,16 +40,15 @@ class GeoSpatial {
 
     GeoSpatial(const GeoSpatial& other) {
         if (other.IsValid()) {
-            // wkb_data_ = new unsigned char[other.size_];
-            // std::copy(
-            //     other.wkb_data_, other.wkb_data_ + other.size_, wkb_data_);
-            // wkt_data_ = other.wkt_data_;
             this->geometry_ = other.geometry_->clone();
+            this->to_wkb_internal();
+            this->to_wkt_internal();
         }
     }
 
     GeoSpatial(GeoSpatial&& other) noexcept
-        : wkb_data_(std::move(other.wkb_data_)),
+        : wkb_data_ro_(std::move(other.wkb_data_ro_)),
+          wkb_data_wr_(std::move(other.wkb_data_wr_)),
           wkt_data_(std::move(other.wkt_data_)),
           geometry_(std::move(other.geometry_)) {
     }
@@ -46,9 +56,9 @@ class GeoSpatial {
     GeoSpatial&
     operator=(const GeoSpatial& other) {
         if (this != &other && other.IsValid()) {
-            if (other.geometry_) {
-                this->geometry_ = other.geometry_->clone();
-            }
+            this->geometry_ = other.geometry_->clone();
+            this->to_wkb_internal();
+            this->to_wkt_internal();
         }
         return *this;
     }
@@ -56,19 +66,25 @@ class GeoSpatial {
     GeoSpatial&
     operator=(GeoSpatial&& other) noexcept {
         if (this != &other) {
-            wkb_data_ = std::move(other.wkb_data_);
+            wkb_data_ro_ = std::move(other.wkb_data_ro_);
+            wkb_data_wr_ = std::move(other.wkb_data_wr_);
             wkt_data_ = std::move(other.wkt_data_);
             geometry_ = std::move(other.geometry_);
         }
         return *this;
     }
 
+    operator std::string() const {
+        //tmp string created by copy ctr
+        return std::string(wkt_data_);
+    }
+
     ~GeoSpatial() {
         if (geometry_) {
             OGRGeometryFactory::destroyGeometry(geometry_);
         }
-        if (wkb_data_) {
-            delete[] wkb_data_;
+        if (wkb_data_wr_) {  // the data
+            delete[] wkb_data_wr_;
         }
         wkt_data_.clear();
     }
@@ -83,47 +99,10 @@ class GeoSpatial {
         return geometry_;
     }
 
-    std::string
-    to_wkt() const {
-        char* wkt = nullptr;
-        if (geometry_ && geometry_->exportToWkt(&wkt) == OGRERR_NONE) {
-            std::string result(wkt);
-            CPLFree(wkt);
-            return result;
-        }
-        return "";
-    }
-
-    void
-    to_wkt_internal() {
-        if (geometry_ && wkt_data_ == "") {
-            wkt_data_ = geometry_->exportToWkt();
-        }
-    }
-
-    std::vector<unsigned char>
-    to_wkb() const {
-        std::vector<unsigned char> wkb;
-        if (geometry_) {
-            size_t size = geometry_->WkbSize();
-            wkb.resize(size);
-            if (geometry_->exportToWkb(wkbNDR, wkb.data()) != OGRERR_NONE) {
-                wkb.clear();
-            }
-        }
-        return wkb;
-    }
-
-    // void
-    // to_wkb_internal() {
-    //     if (geometry_ && size_ == 0) {
-    //         std::vector<unsigned char> wkb_data = geometry_->exportToWkb();
-    //     }
-    // }
-
+    //only expose read only ptr to external env
     const unsigned char*
     wkb_data() const {
-        return wkb_data_;
+        return wkb_data_ro_;
     }
 
     size_t
@@ -131,24 +110,50 @@ class GeoSpatial {
         return size_;
     }
 
-    std::string
-    wkt_data() const {
+    std::string_view
+    data() const {
         return wkt_data_;
     }
 
     const char*
-    wkt_data_c_str() const {
+    c_str() const {
         return wkt_data_.c_str();
     }
 
     size_t
-    wkt_size() const {
+    size() const {
         return wkt_data_.size();
     }
 
  private:
-    const unsigned char* wkb_data_{nullptr};
+    inline void
+    to_wkb_internal() {
+        if (geometry_ && size_ == 0) {
+            size_ = geometry_->WkbSize();
+            wkb_data_wr_ = new unsigned char[size_];
+            wkb_data_ro_ = wkb_data_wr_;
+            geometry_->exportToWkb(wkbNDR, wkb_data_wr_);
+        } else {
+            LOG_WARN("[TH_DEBUG]change from geo to wkb failed!");
+        }
+    }
+
+    inline void
+    to_wkt_internal() {
+        if (geometry_ && wkt_data_ == "") {
+            wkt_data_ = geometry_->exportToWkt();
+        } else {
+            LOG_WARN("[TH_DEBUG]change from geo to wkt failed! ");
+        }
+    }
+
+    //ready only ptr
+    const unsigned char* wkb_data_ro_{nullptr};
+    //read write ptr, use to save a OGRGeometry object when need to create new storage file
+    unsigned char* wkb_data_wr_{nullptr};
     size_t size_ = 0;
     std::string wkt_data_ = "";
     OGRGeometry* geometry_{nullptr};
 };
+
+}  // namespace milvus
