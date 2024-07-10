@@ -23,18 +23,23 @@ class GeoSpatial {
     GeoSpatial() = default;
 
     // all ctr assume that wkb data and wkt string is valid
-    explicit GeoSpatial(const std::string& wkt) : wkt_data_(wkt) {
+    explicit GeoSpatial(const std::string& wkt) {
         OGRGeometryFactory::createFromWkt(wkt.c_str(), nullptr, &geometry_);
         if (!geometry_) {
             LOG_WARN("[TH_DEBUG]ctr geospatial failed from wkt");
+        } else {
+            to_wkb_internal();
+            to_wkt_internal();
         }
     }
 
-    explicit GeoSpatial(const void* wkb, size_t size)
-        : wkb_data_ro_(static_cast<const unsigned char*>(wkb)), size_(size) {
+    explicit GeoSpatial(const void* wkb, size_t size) {
         OGRGeometryFactory::createFromWkb(wkb, nullptr, &geometry_, size);
         if (!geometry_) {
             LOG_WARN("[TH_DEBUG]ctr geospatial failed from wkb");
+        } else {
+            to_wkb_internal();
+            to_wkt_internal();
         }
     }
 

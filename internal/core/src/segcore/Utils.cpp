@@ -146,7 +146,7 @@ GetRawDataSizeOfDataArray(const DataArray* data,
                 }
                 break;
             }
-            case milvus::DataType::GEOSPATIAL: {
+            case DataType::GEOSPATIAL: {
                 auto& geospatial_data = FIELD_DATA(data, geospatial);
                 for (auto& geospatial_bytes : geospatial_data) {
                     result += geospatial_bytes.size();
