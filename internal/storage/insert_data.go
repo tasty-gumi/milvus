@@ -265,6 +265,14 @@ func NewFieldData(dataType schemapb.DataType, fieldSchema *schemapb.FieldSchema,
 		}
 		return data, nil
 
+	case schemapb.DataType_GeoSpatial:
+		data := &GeospatialFieldData{
+			Data: make([][]byte, 0, cap),
+		}
+		if fieldSchema.GetNullable() {
+			data.ValidData = make([]bool, 0, cap)
+		}
+		return data, nil
 	case schemapb.DataType_Array:
 		data := &ArrayFieldData{
 			Data:        make([]*schemapb.ScalarField, 0, cap),
@@ -331,6 +339,10 @@ type JSONFieldData struct {
 	Data      [][]byte
 	ValidData []bool
 }
+type GeospatialFieldData struct {
+	Data      [][]byte
+	ValidData []bool
+}
 type BinaryVectorFieldData struct {
 	Data []byte
 	Dim  int
@@ -373,6 +385,7 @@ func (data *DoubleFieldData) RowNum() int        { return len(data.Data) }
 func (data *StringFieldData) RowNum() int        { return len(data.Data) }
 func (data *ArrayFieldData) RowNum() int         { return len(data.Data) }
 func (data *JSONFieldData) RowNum() int          { return len(data.Data) }
+func (data *GeospatialFieldData) RowNum() int    { return len(data.Data) }
 func (data *BinaryVectorFieldData) RowNum() int  { return len(data.Data) * 8 / data.Dim }
 func (data *FloatVectorFieldData) RowNum() int   { return len(data.Data) / data.Dim }
 func (data *Float16VectorFieldData) RowNum() int { return len(data.Data) / 2 / data.Dim }
@@ -392,6 +405,10 @@ func (data *DoubleFieldData) GetRow(i int) any { return data.Data[i] }
 func (data *StringFieldData) GetRow(i int) any { return data.Data[i] }
 func (data *ArrayFieldData) GetRow(i int) any  { return data.Data[i] }
 func (data *JSONFieldData) GetRow(i int) any   { return data.Data[i] }
+func (data *GeospatialFieldData) GetRow(i int) any {
+	return data.Data[i]
+}
+
 func (data *BinaryVectorFieldData) GetRow(i int) any {
 	return data.Data[i*data.Dim/8 : (i+1)*data.Dim/8]
 }
@@ -422,6 +439,7 @@ func (data *DoubleFieldData) GetRows() any            { return data.Data }
 func (data *StringFieldData) GetRows() any            { return data.Data }
 func (data *ArrayFieldData) GetRows() any             { return data.Data }
 func (data *JSONFieldData) GetRows() any              { return data.Data }
+func (data *GeospatialFieldData) GetRows() any        { return data.Data }
 func (data *BinaryVectorFieldData) GetRows() any      { return data.Data }
 func (data *FloatVectorFieldData) GetRows() any       { return data.Data }
 func (data *Float16VectorFieldData) GetRows() any     { return data.Data }
@@ -511,6 +529,15 @@ func (data *ArrayFieldData) AppendRow(row interface{}) error {
 }
 
 func (data *JSONFieldData) AppendRow(row interface{}) error {
+	v, ok := row.([]byte)
+	if !ok {
+		return merr.WrapErrParameterInvalid("[]byte", row, "Wrong row type")
+	}
+	data.Data = append(data.Data, v)
+	return nil
+}
+
+func (data *GeospatialFieldData) AppendRow(row interface{}) error {
 	v, ok := row.([]byte)
 	if !ok {
 		return merr.WrapErrParameterInvalid("[]byte", row, "Wrong row type")
@@ -661,6 +688,15 @@ func (data *JSONFieldData) AppendRows(rows interface{}) error {
 	return nil
 }
 
+func (data *GeospatialFieldData) AppendRows(rows interface{}) error {
+	v, ok := rows.([][]byte)
+	if !ok {
+		return merr.WrapErrParameterInvalid("[][]byte", rows, "Wrong rows type")
+	}
+	data.Data = append(data.Data, v...)
+	return nil
+}
+
 // AppendRows appends FLATTEN vectors to field data.
 func (data *BinaryVectorFieldData) AppendRows(rows interface{}) error {
 	v, ok := rows.([]byte)
@@ -774,6 +810,10 @@ func (data *DoubleFieldData) GetDataType() schemapb.DataType { return schemapb.D
 func (data *StringFieldData) GetDataType() schemapb.DataType { return data.DataType }
 func (data *ArrayFieldData) GetDataType() schemapb.DataType  { return schemapb.DataType_Array }
 func (data *JSONFieldData) GetDataType() schemapb.DataType   { return schemapb.DataType_JSON }
+func (data *GeospatialFieldData) GetDataType() schemapb.DataType {
+	return schemapb.DataType_GeoSpatial
+}
+
 func (data *BinaryVectorFieldData) GetDataType() schemapb.DataType {
 	return schemapb.DataType_BinaryVector
 }
@@ -839,6 +879,15 @@ func (data *JSONFieldData) GetMemorySize() int {
 	return size
 }
 
+func (data *GeospatialFieldData) GetMemorySize() int {
+	var size int
+	// what's the meaning of 16?
+	for _, val := range data.Data {
+		size += len(val) + 16
+	}
+	return size
+}
+
 func (data *BoolFieldData) GetRowSize(i int) int           { return 1 }
 func (data *Int8FieldData) GetRowSize(i int) int           { return 1 }
 func (data *Int16FieldData) GetRowSize(i int) int          { return 2 }
@@ -852,6 +901,7 @@ func (data *Float16VectorFieldData) GetRowSize(i int) int  { return data.Dim * 2
 func (data *BFloat16VectorFieldData) GetRowSize(i int) int { return data.Dim * 2 }
 func (data *StringFieldData) GetRowSize(i int) int         { return len(data.Data[i]) + 16 }
 func (data *JSONFieldData) GetRowSize(i int) int           { return len(data.Data[i]) + 16 }
+func (data *GeospatialFieldData) GetRowSize(i int) int     { return len(data.Data[i]) + 16 }
 func (data *ArrayFieldData) GetRowSize(i int) int {
 	switch data.ElementType {
 	case schemapb.DataType_Bool:
@@ -935,5 +985,9 @@ func (data *ArrayFieldData) GetNullable() bool {
 }
 
 func (data *JSONFieldData) GetNullable() bool {
+	return len(data.ValidData) != 0
+}
+
+func (data *GeospatialFieldData) GetNullable() bool {
 	return len(data.ValidData) != 0
 }

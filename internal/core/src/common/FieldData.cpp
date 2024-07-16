@@ -211,14 +211,9 @@ FieldDataImpl<Type, is_type_entire_row>::FillFieldData(
                        "inconsistent data type");
             auto geospatial_array =
                 std::dynamic_pointer_cast<arrow::BinaryArray>(array);
-            std::vector<GeoSpatial> values(element_count);
+            std::vector<std::string> values(element_count);
             for (size_t index = 0; index < element_count; ++index) {
-                int length = 0;
-                const unsigned char* wkb_data =
-                    reinterpret_cast<const unsigned char*>(
-                        geospatial_array->GetValue(index, &length));
-                values[index] =
-                    GeoSpatial(wkb_data, static_cast<size_t>(length));
+                values[index] = geospatial_array->GetString(index);
             }
             return FillFieldData(values.data(), element_count);
         }

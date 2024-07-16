@@ -78,7 +78,7 @@ constexpr bool IsVariableType =
 template <typename T>
 constexpr bool IsVariableTypeSupportInChunk =
     std::is_same_v<T, std::string> || std::is_same_v<T, Array> ||
-    std::is_same_v<T, Json> || std::is_same_v<T, GeoSpatial>;
+    std::is_same_v<T, Json>;
 
 template <typename T>
 using ChunkViewType = std::conditional_t<
