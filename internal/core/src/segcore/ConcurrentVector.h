@@ -29,7 +29,6 @@
 #include "common/FieldMeta.h"
 #include "common/FieldData.h"
 #include "common/Json.h"
-#include "common/GeoSpatial.h"
 #include "common/Span.h"
 #include "common/Types.h"
 #include "common/Utils.h"
@@ -417,26 +416,6 @@ class ConcurrentVector<Json> : public ConcurrentVectorImpl<Json, true> {
         int64_t size_per_chunk,
         storage::MmapChunkDescriptorPtr mmap_descriptor = nullptr)
         : ConcurrentVectorImpl<Json, true>::ConcurrentVectorImpl(
-              1, size_per_chunk, mmap_descriptor) {
-    }
-
-    std::string_view
-    view_element(ssize_t element_index) const {
-        auto chunk_id = element_index / size_per_chunk_;
-        auto chunk_offset = element_index % size_per_chunk_;
-        return std::string_view(
-            chunks_ptr_->view_element(chunk_id, chunk_offset).data());
-    }
-};
-
-template <>
-class ConcurrentVector<GeoSpatial>
-    : public ConcurrentVectorImpl<GeoSpatial, true> {
- public:
-    explicit ConcurrentVector(
-        int64_t size_per_chunk,
-        storage::MmapChunkDescriptorPtr mmap_descriptor = nullptr)
-        : ConcurrentVectorImpl<GeoSpatial, true>::ConcurrentVectorImpl(
               1, size_per_chunk, mmap_descriptor) {
     }
 

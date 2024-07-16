@@ -15,6 +15,7 @@ import (
 	"github.com/milvus-io/milvus/pkg/util/parameterutil"
 	"github.com/milvus-io/milvus/pkg/util/paramtable"
 	"github.com/milvus-io/milvus/pkg/util/typeutil"
+	"github.com/twpayne/go-geom/encoding/wkt"
 )
 
 type validateUtil struct {
@@ -89,6 +90,10 @@ func (v *validateUtil) Validate(data []*schemapb.FieldData, helper *typeutil.Sch
 			}
 		case schemapb.DataType_VarChar:
 			if err := v.checkVarCharFieldData(field, fieldSchema); err != nil {
+				return err
+			}
+		case schemapb.DataType_GeoSpatial:
+			if err := v.checkGeospatialFieldData(field, fieldSchema); err != nil {
 				return err
 			}
 		case schemapb.DataType_JSON:
@@ -655,6 +660,26 @@ func (v *validateUtil) checkVarCharFieldData(field *schemapb.FieldData, fieldSch
 		return nil
 	}
 
+	return nil
+}
+
+func (v *validateUtil) checkGeospatialFieldData(field *schemapb.FieldData, fieldSchema *schemapb.FieldSchema) error {
+	geospatialArray := field.GetScalars().GetGeospatialData().GetData()
+	if geospatialArray == nil {
+		msg := fmt.Sprintf("geospatial field '%v' is illegal, array type mismatch", field.GetFieldName())
+		return merr.WrapErrParameterInvalid("need geospatial array", "got nil", msg)
+	}
+
+	for _, wktdata := range geospatialArray {
+		// ignore parsed geom
+		_, err := wkt.Unmarshal(string(wktdata))
+		if err != nil {
+			log.Warn("insert invalid Geospatial data!! The wkt data:"+string(wktdata),
+				zap.Error(err),
+			)
+			return merr.WrapErrIoFailedReason(err.Error())
+		}
+	}
 	return nil
 }
 

@@ -373,7 +373,7 @@ SegmentSealedImpl::LoadFieldData(FieldId field_id, FieldDataInfo& data) {
                 }
                 case milvus::DataType::GEOSPATIAL: {
                     auto var_column =
-                        std::make_shared<VariableColumn<milvus::GeoSpatial>>(
+                        std::make_shared<VariableColumn<std::string>>(
                             num_rows, field_meta);
                     FieldDataPtr field_data;
                     while (data.channel->pop(field_data)) {
@@ -542,6 +542,13 @@ SegmentSealedImpl::MapFieldData(const FieldId field_id, FieldDataInfo& data) {
                         total_written,
                         field_meta,
                         DEFAULT_MMAP_VRCOL_BLOCK_SIZE);
+                var_column->Seal(std::move(indices));
+                column = std::move(var_column);
+                break;
+            }
+            case milvus::DataType::GEOSPATIAL: {
+                auto var_column = std::make_shared<VariableColumn<std::string>>(
+                    file, total_written, field_meta);
                 var_column->Seal(std::move(indices));
                 column = std::move(var_column);
                 break;
@@ -1256,6 +1263,15 @@ SegmentSealedImpl::get_raw_data(FieldId field_id,
             break;
         }
 
+        case DataType::GEOSPATIAL: {
+            bulk_subscript_ptr_impl<std::string>(column.get(),
+                                                 seg_offsets,
+                                                 count,
+                                                 ret->mutable_scalars()
+                                                     ->mutable_geospatial_data()
+                                                     ->mutable_data());
+            break;
+        }
         case DataType::ARRAY: {
             bulk_subscript_array_impl(
                 column.get(),
