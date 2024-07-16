@@ -82,7 +82,7 @@ func getVarFieldLength(fieldSchema *schemapb.FieldSchema, policy getVariableFiel
 		default:
 			return 0, fmt.Errorf("unrecognized getVariableFieldLengthPolicy %v", policy)
 		}
-	case schemapb.DataType_Array, schemapb.DataType_JSON:
+	case schemapb.DataType_Array, schemapb.DataType_JSON, schemapb.DataType_GeoSpatial:
 		return DynamicFieldMaxLength, nil
 	default:
 		return 0, fmt.Errorf("field %s is not a variable-length type", fieldSchema.DataType.String())
@@ -114,7 +114,7 @@ func estimateSizeBy(schema *schemapb.CollectionSchema, policy getVariableFieldLe
 			res += 4
 		case schemapb.DataType_Int64, schemapb.DataType_Double:
 			res += 8
-		case schemapb.DataType_VarChar, schemapb.DataType_Array, schemapb.DataType_JSON:
+		case schemapb.DataType_VarChar, schemapb.DataType_Array, schemapb.DataType_JSON, schemapb.DataType_GeoSpatial: // geo wkt max len
 			maxLengthPerRow, err := getVarFieldLength(fs, policy)
 			if err != nil {
 				return 0, err
@@ -196,6 +196,10 @@ func CalcColumnSize(column *schemapb.FieldData) int {
 		for _, str := range column.GetScalars().GetJsonData().GetData() {
 			res += len(str)
 		}
+	case schemapb.DataType_GeoSpatial:
+		for _, str := range column.GetScalars().GetGeospatialData().GetData() {
+			res += len(str)
+		}
 	}
 	return res
 }
@@ -231,6 +235,11 @@ func EstimateEntitySize(fieldsData []*schemapb.FieldData, rowOffset int) (int, e
 				return 0, fmt.Errorf("offset out range of field datas")
 			}
 			res += len(fs.GetScalars().GetJsonData().GetData()[rowOffset])
+		case schemapb.DataType_GeoSpatial:
+			if rowOffset >= len(fs.GetScalars().GetGeospatialData().GetData()) {
+				return 0, fmt.Errorf("offset out range of field datas")
+			}
+			res += len(fs.GetScalars().GetGeospatialData().GetData()[rowOffset])
 		case schemapb.DataType_BinaryVector:
 			res += int(fs.GetVectors().GetDim())
 		case schemapb.DataType_FloatVector:
@@ -418,6 +427,10 @@ func IsIntegerType(dataType schemapb.DataType) bool {
 
 func IsJSONType(dataType schemapb.DataType) bool {
 	return dataType == schemapb.DataType_JSON
+}
+
+func IsGeospatialType(dataType schemapb.DataType) bool {
+	return dataType == schemapb.DataType_GeoSpatial
 }
 
 func IsArrayType(dataType schemapb.DataType) bool {

@@ -368,6 +368,21 @@ func printPayloadValues(colType schemapb.DataType, reader PayloadReaderInterface
 		for i, v := range valids {
 			fmt.Printf("\t\t%d : %v\n", i, v)
 		}
+	case schemapb.DataType_GeoSpatial:
+		rows, err := reader.GetPayloadLengthFromReader()
+		if err != nil {
+			return err
+		}
+		val, valids, err := reader.GetGeospatialFromPayload()
+		if err != nil {
+			return err
+		}
+		for i := 0; i < rows; i++ {
+			fmt.Printf("\t\t%d : %s\n", i, val[i])
+		}
+		for i, v := range valids {
+			fmt.Printf("\t\t%d : %v\n", i, v)
+		}
 	case schemapb.DataType_SparseFloatVector:
 		sparseData, _, err := reader.GetSparseFloatVectorFromPayload()
 		if err != nil {
