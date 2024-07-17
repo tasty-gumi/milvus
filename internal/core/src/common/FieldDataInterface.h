@@ -490,7 +490,7 @@ class FieldDataGeoSpatialImpl : public FieldDataImpl<GeoSpatial, true> {
     Size() const override {
         int64_t data_size = 0;
         for (size_t offset = 0; offset < length(); ++offset) {
-            data_size += field_data_[offset].wkb_size();
+            data_size += field_data_[offset].size();
         }
 
         return data_size;
@@ -502,7 +502,7 @@ class FieldDataGeoSpatialImpl : public FieldDataImpl<GeoSpatial, true> {
                    "field data subscript out of range");
         AssertInfo(offset < length(),
                    "subscript position don't has valid value");
-        return field_data_[offset].wkb_size();
+        return field_data_[offset].size();
     }
     void
     FillFieldData(const std::shared_ptr<arrow::Array> array) override {

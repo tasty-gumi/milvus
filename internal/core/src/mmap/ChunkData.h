@@ -181,8 +181,8 @@ VariableLengthChunk<GeoSpatial>::set(const GeoSpatial* src,
         begin,
         size_);
     size_t total_size = 0;
-    //geospatial data add padding now，consider \0 as the end of a string
-    size_t padding_size = 1;
+    //geospatial data no need to pad
+    size_t padding_size = 0;
     for (auto i = 0; i < length; i++) {
         total_size += src[i].size() + padding_size;
     }
@@ -191,15 +191,15 @@ VariableLengthChunk<GeoSpatial>::set(const GeoSpatial* src,
     for (auto i = 0, offset = 0; i < length; i++) {
         auto data_size = src[i].size() + padding_size;
         char* data_ptr = buf + offset;
-        std::strcpy(data_ptr, src[i].c_str());
-        data_[i + begin] = GeoSpatial(std::string(src[i].data()));
+        std::copy_n(src[i].data(), data_size, data_ptr);
+        data_[i + begin] = GeoSpatial(data_ptr, src[i].size());
         offset += data_size;
     }
 }
 template <>
 inline GeoSpatial
 VariableLengthChunk<GeoSpatial>::get(const int i) const {
-    return std::move(GeoSpatial(std::string(data_[i].data())));
+    return std::move(GeoSpatial(data_[i].data(), data_[i].size()));
 }
 template <>
 inline void

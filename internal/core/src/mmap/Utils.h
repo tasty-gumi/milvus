@@ -141,14 +141,14 @@ WriteFieldData(File& file,
                     auto Geo_ptr =
                         static_cast<const GeoSpatial*>(data->RawValue(i));
                     ssize_t written_data_size =
-                        file.WriteInt<uint32_t>(Geo_ptr->wkb_size());
+                        file.WriteInt<uint32_t>(Geo_ptr->size());
                     if (written_data_size != sizeof(uint32_t)) {
                         THROW_FILE_WRITE_ERROR
                     }
                     total_written += written_data_size;
                     ssize_t written_data =
-                        file.Write(Geo_ptr->wkb_data(), Geo_ptr->wkb_size());
-                    if (written_data < Geo_ptr->wkb_size()) {
+                        file.Write(Geo_ptr->data(), Geo_ptr->size());
+                    if (written_data < Geo_ptr->size()) {
                         THROW_FILE_WRITE_ERROR
                     }
                     total_written += written_data;

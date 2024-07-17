@@ -418,8 +418,8 @@ class ConcurrentVector<GeoSpatial>
     view_element(ssize_t element_index) const {
         auto chunk_id = element_index / size_per_chunk_;
         auto chunk_offset = element_index % size_per_chunk_;
-        return std::string_view(
-            chunks_ptr_->view_element(chunk_id, chunk_offset).data());
+        return std::string_view(reinterpret_cast<const char*>(
+            chunks_ptr_->view_element(chunk_id, chunk_offset).data()));
     }
 };
 

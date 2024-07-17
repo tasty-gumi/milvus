@@ -284,8 +284,8 @@ BaseEventData::Serialize() {
                 auto geo_ptr = static_cast<const GeoSpatial*>(
                     field_data->RawValue(offset));
                 payload_writer->add_one_binary_payload(
-                    reinterpret_cast<const uint8_t*>(geo_ptr->wkb_data()),
-                    geo_ptr->wkb_size());
+                    reinterpret_cast<const uint8_t*>(geo_ptr->data()),
+                    geo_ptr->size());
             }
             break;
         }

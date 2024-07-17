@@ -79,7 +79,7 @@ class FieldData<GeoSpatial> : public FieldDataGeoSpatialImpl {
 template <>
 class FieldData<GeoSpatial> : public FieldDataGeoSpatialImpl {
  public:
-    static_assert(IsScalar<GeoSpatial> || std::is_same_v<GeoSpatial, PkType>);
+    static_assert(IsScalar<GeoSpatial> || std::is_same_v<std::string, PkType>);
     explicit FieldData(DataType data_type, int64_t buffered_num_rows = 0)
         : FieldDataGeoSpatialImpl(data_type, buffered_num_rows) {
     }
