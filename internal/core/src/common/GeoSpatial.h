@@ -37,8 +37,7 @@ class GeoSpatial {
     }
 
     GeoSpatial(GeoSpatial&& other) noexcept
-        : wkb_data_ro_(std::move(other.wkb_data_ro_)),
-          wkb_data_wr_(std::move(other.wkb_data_wr_)),
+        : wkb_data_(std::move(other.wkb_data_)),
           geometry_(std::move(other.geometry_)) {
     }
 
@@ -54,8 +53,7 @@ class GeoSpatial {
     GeoSpatial&
     operator=(GeoSpatial&& other) noexcept {
         if (this != &other) {
-            wkb_data_ro_ = std::move(other.wkb_data_ro_);
-            wkb_data_wr_ = std::move(other.wkb_data_wr_);
+            wkb_data_ = std::move(other.wkb_data_);
             geometry_ = std::move(other.geometry_);
         }
         return *this;
@@ -63,11 +61,11 @@ class GeoSpatial {
 
     operator std::string() const {
         //tmp string created by copy ctr
-        return std::string(geometry_->exportToWkt());
+        return std::string(reinterpret_cast<const char*>(wkb_data_));
     }
 
     operator std::string_view() const {
-        return std::string_view(reinterpret_cast<const char*>(wkb_data_ro_),
+        return std::string_view(reinterpret_cast<const char*>(wkb_data_),
                                 size_);
     }
 
@@ -75,8 +73,8 @@ class GeoSpatial {
         if (geometry_) {
             OGRGeometryFactory::destroyGeometry(geometry_);
         }
-        if (wkb_data_wr_) {  // the data
-            delete[] wkb_data_wr_;
+        if (wkb_data_) {  // the data
+            delete[] wkb_data_;
         }
     }
 
@@ -93,14 +91,8 @@ class GeoSpatial {
     //only expose read only ptr to external env
     const unsigned char*
     data() const {
-        return wkb_data_ro_;
+        return wkb_data_;
     }
-
-    // for Seal() to use
-    // const char*
-    // c_str() const {
-    //     return reinterpret_cast<const char*>(wkb_data_ro_);
-    // }
 
     size_t
     size() const {
@@ -112,17 +104,14 @@ class GeoSpatial {
     to_wkb_internal() {
         if (geometry_ && size_ == 0) {
             size_ = geometry_->WkbSize();
-            wkb_data_wr_ = new unsigned char[size_];
-            wkb_data_ro_ = wkb_data_wr_;
+            wkb_data_ = new unsigned char[size_];
             // little-endian order to save wkb
-            geometry_->exportToWkb(wkbNDR, wkb_data_wr_);
+            geometry_->exportToWkb(wkbNDR, wkb_data_);
         }
     }
 
-    //ready only ptr
-    const unsigned char* wkb_data_ro_{nullptr};
     //read write ptr, use to save a OGRGeometry object when need to create new storage file
-    unsigned char* wkb_data_wr_{nullptr};
+    unsigned char* wkb_data_{nullptr};
     size_t size_{0};
     OGRGeometry* geometry_{nullptr};
 };

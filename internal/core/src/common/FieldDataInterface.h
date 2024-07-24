@@ -419,18 +419,18 @@ class FieldDataStringImpl : public FieldDataImpl<std::string, true> {
     }
 };
 
-class FieldDataGeoSpatialImpl : public FieldDataImpl<GeoSpatial, true> {
+class FieldDataGeoSpatialImpl : public FieldDataImpl<std::string, true> {
  public:
     explicit FieldDataGeoSpatialImpl(DataType data_type,
                                      int64_t total_num_rows = 0)
-        : FieldDataImpl<GeoSpatial, true>(1, data_type, total_num_rows) {
+        : FieldDataImpl<std::string, true>(1, data_type, total_num_rows) {
     }
 
     int64_t
     DataSize() const override {
         int64_t data_size = 0;
         for (size_t offset = 0; offset < length(); ++offset) {
-            data_size += data_[offset].wkb_size();
+            data_size += data_[offset].size();
         }
 
         return data_size;
@@ -442,67 +442,7 @@ class FieldDataGeoSpatialImpl : public FieldDataImpl<GeoSpatial, true> {
                    "field data subscript out of range");
         AssertInfo(offset < length(),
                    "subscript position don't has valid value");
-        return data_[offset].wkb_size();
-    }
-    void
-    FillFieldData(const std::shared_ptr<arrow::Array> array) override {
-        AssertInfo(array->type()->id() == arrow::Type::type::BINARY,
-                   "[TH_DEBUG]inconsistent data type, expected: {}, got: {}",
-                   "BINARY",
-                   array->type()->ToString());
-        auto geospatial_array =
-            std::dynamic_pointer_cast<arrow::BinaryArray>(array);
-        FillFieldData(geospatial_array);
-    }
-    void
-    FillFieldData(const std::shared_ptr<arrow::BinaryArray>& array) override {
-        auto n = array->length();
-        if (n == 0) {
-            return;
-        }
-
-        std::lock_guard lck(tell_mutex_);
-        if (length_ + n > get_num_rows()) {
-            resize_field_data(length_ + n);
-        }
-
-        for (auto i = 0; i < n; ++i) {
-            int length = 0;
-            const unsigned char* wkb_data =
-                reinterpret_cast<const unsigned char*>(
-                    array->GetValue(i, &length));
-            field_data_[length_ + i] =
-                GeoSpatial(wkb_data, static_cast<size_t>(length));
-            i++;
-        }
-        length_ += n;
-    }
-};
-
-class FieldDataGeoSpatialImpl : public FieldDataImpl<std::string, true> {
- public:
-    explicit FieldDataGeoSpatialImpl(DataType data_type,
-                                     int64_t total_num_rows = 0)
-        : FieldDataImpl<std::string, true>(1, data_type, total_num_rows) {
-    }
-
-    int64_t
-    Size() const override {
-        int64_t data_size = 0;
-        for (size_t offset = 0; offset < length(); ++offset) {
-            data_size += field_data_[offset].size();
-        }
-
-        return data_size;
-    }
-
-    int64_t
-    Size(ssize_t offset) const override {
-        AssertInfo(offset < get_num_rows(),
-                   "field data subscript out of range");
-        AssertInfo(offset < length(),
-                   "subscript position don't has valid value");
-        return field_data_[offset].size();
+        return data_[offset].size();
     }
     void
     FillFieldData(const std::shared_ptr<arrow::Array> array) override {
@@ -527,7 +467,7 @@ class FieldDataGeoSpatialImpl : public FieldDataImpl<std::string, true> {
         }
         auto i = 0;
         for (const auto& geospatial : *array) {
-            field_data_[length_ + i] = geospatial.value();
+            data_[length_ + i] = geospatial.value();
             i++;
         }
         length_ += n;
