@@ -156,6 +156,8 @@ TEST_F(ChunkVectorTest, FillDataWithMmap) {
         EXPECT_EQ(varchar_result->scalars().string_data().data_size(),
                   num_inserted);
         EXPECT_EQ(json_result->scalars().json_data().data_size(), num_inserted);
+        EXPECT_EQ(geospatial_result->scalars().geospatial_data().data_size(),
+                  num_inserted);
         EXPECT_EQ(fp32_vec_result->vectors().float_vector().data_size(),
                   num_inserted * dim);
         EXPECT_EQ(fp16_vec_result->vectors().float16_vector().size(),
