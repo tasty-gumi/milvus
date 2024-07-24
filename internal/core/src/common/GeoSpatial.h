@@ -12,7 +12,7 @@
 
 #include <gdal.h>
 #include <ogr_geometry.h>
-#include <string>
+#include <string_view>
 #include "common/EasyAssert.h"
 
 namespace milvus {
@@ -66,6 +66,11 @@ class GeoSpatial {
         return std::string(geometry_->exportToWkt());
     }
 
+    operator std::string_view() const {
+        return std::string_view(reinterpret_cast<const char*>(wkb_data_ro_),
+                                size_);
+    }
+
     ~GeoSpatial() {
         if (geometry_) {
             OGRGeometryFactory::destroyGeometry(geometry_);
@@ -92,10 +97,10 @@ class GeoSpatial {
     }
 
     // for Seal() to use
-    const char*
-    c_str() const {
-        return reinterpret_cast<const char*>(wkb_data_ro_);
-    }
+    // const char*
+    // c_str() const {
+    //     return reinterpret_cast<const char*>(wkb_data_ro_);
+    // }
 
     size_t
     size() const {

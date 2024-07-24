@@ -169,40 +169,6 @@ VariableLengthChunk<Json>::get(const int i) const {
 }
 template <>
 inline void
-VariableLengthChunk<GeoSpatial>::set(const GeoSpatial* src,
-                                     uint32_t begin,
-                                     uint32_t length) {
-    auto mcm = storage::MmapManager::GetInstance().GetMmapChunkManager();
-    milvus::ErrorCode err_code;
-    AssertInfo(
-        begin + length <= size_,
-        "failed to set a chunk with length: {} from beign {}, map_size={}",
-        length,
-        begin,
-        size_);
-    size_t total_size = 0;
-    //geospatial data no need to pad
-    size_t padding_size = 0;
-    for (auto i = 0; i < length; i++) {
-        total_size += src[i].size() + padding_size;
-    }
-    auto buf = (char*)mcm->Allocate(mmap_descriptor_, total_size);
-    AssertInfo(buf != nullptr, "failed to allocate memory from mmap_manager.");
-    for (auto i = 0, offset = 0; i < length; i++) {
-        auto data_size = src[i].size() + padding_size;
-        char* data_ptr = buf + offset;
-        std::copy_n(src[i].data(), data_size, data_ptr);
-        data_[i + begin] = GeoSpatial(data_ptr, src[i].size());
-        offset += data_size;
-    }
-}
-template <>
-inline GeoSpatial
-VariableLengthChunk<GeoSpatial>::get(const int i) const {
-    return std::move(GeoSpatial(data_[i].data(), data_[i].size()));
-}
-template <>
-inline void
 VariableLengthChunk<Array>::set(const Array* src,
                                 uint32_t begin,
                                 uint32_t length) {
