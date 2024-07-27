@@ -21,6 +21,7 @@
 #include "common/EasyAssert.h"
 #include "generated/ExtractInfoExprVisitor.h"
 #include "generated/ExtractInfoPlanNodeVisitor.h"
+#include "ogr_geometry.h"
 #include "pb/plan.pb.h"
 #include "query/Utils.h"
 #include "knowhere/comp/materialized_view.h"
@@ -929,6 +930,38 @@ ProtoParser::ParseJsonContainsExpr(
 }
 
 expr::TypedExprPtr
+ProtoParser::ParseGISFunctionFilterExprs(
+    const proto::plan::GISFunctionFilterExpr& expr_pb) {
+    auto& columnInfo = expr_pb.column_info();
+    auto field_id = FieldId(columnInfo.field_id());
+    auto data_type = schema[field_id].get_data_type();
+    Assert(data_type == (DataType)columnInfo.data_type());
+    const std::string& str = expr_pb.wkb_string();
+    OGRGeometry* geometry = nullptr;
+    OGRGeometryFactory::createFromWkb(
+        str.data(), nullptr, &geometry, str.size());
+    Assert(geometry != nullptr);
+    return std::make_shared<expr::GISFunctioinFilterExpr>(
+        columnInfo, expr_pb.op(), str);
+}
+
+ExprPtr
+ProtoParser::ParseGISFunctionFilterExpr(
+    const proto::plan::GISFunctionFilterExpr& expr_pb) {
+    auto& columnInfo = expr_pb.column_info();
+    auto field_id = FieldId(columnInfo.field_id());
+    auto data_type = schema[field_id].get_data_type();
+    Assert(data_type == (DataType)columnInfo.data_type());
+    const std::string& str = expr_pb.wkb_string();
+    OGRGeometry* geometry = nullptr;
+    OGRGeometryFactory::createFromWkb(
+        str.data(), nullptr, &geometry, str.size());
+    Assert(geometry != nullptr);
+    return std::make_unique<GISFunctionFilterExprImpl>(
+        columnInfo, expr_pb.op(), str);
+}
+
+expr::TypedExprPtr
 ProtoParser::CreateAlwaysTrueExprs() {
     return std::make_shared<expr::AlwaysTrueExpr>();
 }
@@ -967,6 +1000,10 @@ ProtoParser::ParseExprs(const proto::plan::Expr& expr_pb) {
         }
         case ppe::kJsonContainsExpr: {
             return ParseJsonContainsExprs(expr_pb.json_contains_expr());
+        }
+        case ppe::kGisfunctionFilterExpr: {
+            return ParseGISFunctionFilterExprs(
+                expr_pb.gisfunction_filter_expr());
         }
         default: {
             std::string s;
@@ -1011,6 +1048,10 @@ ProtoParser::ParseExpr(const proto::plan::Expr& expr_pb) {
         }
         case ppe::kJsonContainsExpr: {
             return ParseJsonContainsExpr(expr_pb.json_contains_expr());
+        }
+        case ppe::kGisfunctionFilterExpr: {
+            return ParseGISFunctionFilterExpr(
+                expr_pb.gisfunction_filter_expr());
         }
         default: {
             std::string s;
