@@ -99,6 +99,42 @@ class GeoSpatial {
         return size_;
     }
 
+    //spatial relation
+    bool
+    equals(const GeoSpatial& other) const {
+        return geometry_->Equals(other.geometry_);
+    }
+
+    bool
+    touches(const GeoSpatial& other) const {
+        return geometry_->Touches(other.geometry_);
+    }
+
+    bool
+    overlaps(const GeoSpatial& other) const {
+        return geometry_->Overlaps(other.geometry_);
+    }
+
+    bool
+    crosses(const GeoSpatial& other) const {
+        return geometry_->Crosses(other.geometry_);
+    }
+
+    bool
+    contains(const GeoSpatial& other) const {
+        return geometry_->Contains(other.geometry_);
+    }
+
+    bool
+    intersects(const GeoSpatial& other) const {
+        return geometry_->Intersects(other.geometry_);
+    }
+
+    bool
+    within(const GeoSpatial& other) const {
+        return geometry_->Within(other.geometry_);
+    }
+
  private:
     inline void
     to_wkb_internal() {
