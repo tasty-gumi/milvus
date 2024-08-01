@@ -109,3 +109,4 @@ internal/core/src/pb/*.pb.cc
 rebuild_milvus.sh
 insert_data.py
 query.py
+go.sum
