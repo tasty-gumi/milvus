@@ -15,7 +15,7 @@ import (
 	"github.com/milvus-io/milvus/pkg/util/parameterutil"
 	"github.com/milvus-io/milvus/pkg/util/paramtable"
 	"github.com/milvus-io/milvus/pkg/util/typeutil"
-	"github.com/twpayne/go-geom/encoding/wkt"
+	"github.com/twpayne/go-geom/encoding/wkb"
 )
 
 type validateUtil struct {
@@ -672,13 +672,11 @@ func (v *validateUtil) checkGeospatialFieldData(field *schemapb.FieldData, field
 		return merr.WrapErrParameterInvalid("need geospatial array", "got nil", msg)
 	}
 
-	for _, wktdata := range geospatialArray {
-		// ignore parsed geom
-		_, err := wkt.Unmarshal(string(wktdata))
+	for _, wkbdata := range geospatialArray {
+		// ignore parsed geom, the check is during insert task pre execute,so geo data became wkb
+		_, err := wkb.Unmarshal(wkbdata)
 		if err != nil {
-			log.Warn("insert invalid Geospatial data!! The wkt data:"+string(wktdata),
-				zap.Error(err),
-			)
+			log.Warn("insert invalid Geospatial data!! The wkt data has errors", zap.Error(err))
 			return merr.WrapErrIoFailedReason(err.Error())
 		}
 	}
