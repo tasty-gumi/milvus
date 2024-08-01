@@ -2,6 +2,7 @@ package httpserver
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"math"
@@ -12,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
 	"github.com/tidwall/gjson"
+	"github.com/twpayne/go-geom/encoding/wkb"
 	"github.com/twpayne/go-geom/encoding/wkt"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -453,11 +455,20 @@ func checkAndSetData(body string, collSchema *schemapb.CollectionSchema) (error,
 					reallyData[fieldName] = []byte(dataString)
 				case schemapb.DataType_GeoSpatial:
 					// treat as string(wkt) data,the string data must be valid
-					_, err := wkt.Unmarshal(dataString)
+					WktString, err := base64.StdEncoding.DecodeString(dataString)
+					fmt.Println("before unmarshal wkt:", string(WktString))
+					geomT, err := wkt.Unmarshal(string(WktString))
 					if err != nil {
+						log.Warn("proxy change wkt to geomtyr failed!!", zap.String("WktString:", dataString))
 						return merr.WrapErrParameterInvalid(schemapb.DataType_name[int32(fieldType)], dataString, err.Error()), reallyDataArray
 					}
-					reallyData[fieldName] = []byte(dataString)
+					// translate the wkt bytes to wkb bytes ,store the bytes in LittleEndian which cpp core used as well
+					dataWkbBytes, err := wkb.Marshal(geomT, wkb.NDR)
+					if err != nil {
+						log.Warn("proxy change geomtry to wkb failed!!", zap.String("WktString:", dataString))
+						return merr.WrapErrParameterInvalid(schemapb.DataType_name[int32(fieldType)], dataString, err.Error()), reallyDataArray
+					}
+					reallyData[fieldName] = dataWkbBytes
 				case schemapb.DataType_Float:
 					result, err := cast.ToFloat32E(dataString)
 					if err != nil {

@@ -114,7 +114,7 @@ func estimateSizeBy(schema *schemapb.CollectionSchema, policy getVariableFieldLe
 			res += 4
 		case schemapb.DataType_Int64, schemapb.DataType_Double:
 			res += 8
-		case schemapb.DataType_VarChar, schemapb.DataType_Array, schemapb.DataType_JSON, schemapb.DataType_GeoSpatial: // geo wkt max len
+		case schemapb.DataType_VarChar, schemapb.DataType_Array, schemapb.DataType_JSON, schemapb.DataType_GeoSpatial: // geo wkb max len
 			maxLengthPerRow, err := getVarFieldLength(fs, policy)
 			if err != nil {
 				return 0, err
@@ -490,7 +490,7 @@ func IsStringType(dataType schemapb.DataType) bool {
 }
 
 func IsVariableDataType(dataType schemapb.DataType) bool {
-	return IsStringType(dataType) || IsArrayType(dataType) || IsJSONType(dataType)
+	return IsStringType(dataType) || IsArrayType(dataType) || IsJSONType(dataType) || IsGeospatialType(dataType)
 }
 
 func IsPrimitiveType(dataType schemapb.DataType) bool {
@@ -554,6 +554,12 @@ func PrepareResultFieldData(sample []*schemapb.FieldData, topK int64) []*schemap
 			case *schemapb.ScalarField_JsonData:
 				scalar.Scalars.Data = &schemapb.ScalarField_JsonData{
 					JsonData: &schemapb.JSONArray{
+						Data: make([][]byte, 0, topK),
+					},
+				}
+			case *schemapb.ScalarField_GeospatialData:
+				scalar.Scalars.Data = &schemapb.ScalarField_GeospatialData{
+					GeospatialData: &schemapb.GeoSpatialArray{
 						Data: make([][]byte, 0, topK),
 					},
 				}
@@ -726,6 +732,17 @@ func AppendFieldData(dst, src []*schemapb.FieldData, idx int64) (appendSize int6
 				}
 				/* #nosec G103 */
 				appendSize += int64(unsafe.Sizeof(srcScalar.JsonData.Data[idx]))
+			case *schemapb.ScalarField_GeospatialData:
+				if dstScalar.GetGeospatialData() == nil {
+					dstScalar.Data = &schemapb.ScalarField_GeospatialData{
+						GeospatialData: &schemapb.GeoSpatialArray{
+							Data: [][]byte{srcScalar.GeospatialData.Data[idx]},
+						},
+					}
+				} else {
+					dstScalar.GetGeospatialData().Data = append(dstScalar.GetGeospatialData().Data, srcScalar.GeospatialData.Data[idx])
+				}
+				appendSize += int64(unsafe.Sizeof(srcScalar.GeospatialData.Data[idx]))
 			default:
 				log.Error("Not supported field type", zap.String("field type", fieldData.Type.String()))
 			}
@@ -844,6 +861,8 @@ func DeleteFieldData(dst []*schemapb.FieldData) {
 				dstScalar.GetStringData().Data = dstScalar.GetStringData().Data[:len(dstScalar.GetStringData().Data)-1]
 			case *schemapb.ScalarField_JsonData:
 				dstScalar.GetJsonData().Data = dstScalar.GetJsonData().Data[:len(dstScalar.GetJsonData().Data)-1]
+			case *schemapb.ScalarField_GeospatialData:
+				dstScalar.GetGeospatialData().Data = dstScalar.GetGeospatialData().Data[:len(dstScalar.GetGeospatialData().Data)-1]
 			default:
 				log.Error("wrong field type added", zap.String("field type", fieldData.Type.String()))
 			}
@@ -978,6 +997,16 @@ func MergeFieldData(dst []*schemapb.FieldData, src []*schemapb.FieldData) error 
 					}
 				} else {
 					dstScalar.GetJsonData().Data = append(dstScalar.GetJsonData().Data, srcScalar.JsonData.Data...)
+				}
+			case *schemapb.ScalarField_GeospatialData:
+				if dstScalar.GetGeospatialData() == nil {
+					dstScalar.Data = &schemapb.ScalarField_GeospatialData{
+						GeospatialData: &schemapb.GeoSpatialArray{
+							Data: srcScalar.GeospatialData.Data,
+						},
+					}
+				} else {
+					dstScalar.GetGeospatialData().Data = append(dstScalar.GetGeospatialData().Data, srcScalar.GeospatialData.Data...)
 				}
 			case *schemapb.ScalarField_BytesData:
 				if dstScalar.GetBytesData() == nil {

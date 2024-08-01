@@ -27,6 +27,7 @@ import (
 	"github.com/milvus-io/milvus/pkg/util/metautil"
 	"github.com/milvus-io/milvus/pkg/util/paramtable"
 	"github.com/milvus-io/milvus/pkg/util/typeutil"
+	"github.com/pingcap/log"
 )
 
 func CompressSaveBinlogPaths(req *datapb.SaveBinlogPathsRequest) error {
@@ -147,6 +148,7 @@ func DecompressBinLog(binlogType storage.BinlogType, collectionID, partitionID,
 				if err != nil {
 					return err
 				}
+				log.Warn(path)
 				binlog.LogPath = path
 			}
 		}

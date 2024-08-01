@@ -21,6 +21,13 @@ expr:
 	| (JSONContains | ArrayContains)'('expr',' expr')'                           # JSONContains
 	| (JSONContainsAll | ArrayContainsAll)'('expr',' expr')'                     # JSONContainsAll
 	| (JSONContainsAny | ArrayContainsAny)'('expr',' expr')'                     # JSONContainsAny
+	| GeospatialEuqals '('expr','expr')'										 # GeospatialEuqals	
+	| GeospatialTouches '('expr','expr')'				                         # GeospatialTouches
+	| GeospatialOverlaps '('expr','expr')'										 # GeospatialOverlaps
+	| GeospatialCrosses '('expr','expr')'										 # GeospatialCrosses
+	| GeospatialContains '('expr','expr')'										 # GeospatialContains
+	| GeospatialIntersects '('expr','expr')'									 # GeospatialIntersects
+	| GeospatialWithin '('expr','expr')'										 # GeospatialWithin
 	| ArrayLength'('(Identifier | JSONIdentifier)')'                             # ArrayLength
 	| expr op1 = (LT | LE) (Identifier | JSONIdentifier) op2 = (LT | LE) expr	 # Range
 	| expr op1 = (GT | GE) (Identifier | JSONIdentifier) op2 = (GT | GE) expr    # ReverseRange
@@ -83,6 +90,14 @@ ArrayContains: 'array_contains' | 'ARRAY_CONTAINS';
 ArrayContainsAll: 'array_contains_all' | 'ARRAY_CONTAINS_ALL';
 ArrayContainsAny: 'array_contains_any' | 'ARRAY_CONTAINS_ANY';
 ArrayLength: 'array_length' | 'ARRAY_LENGTH';
+
+GeospatialEuqals:'geospatial_euqals' | 'GEOSPATIAL_EQUALS';
+GeospatialTouches:'geospatial_touches' | 'GEOSPATIAL_TOUCHES';
+GeospatialOverlaps: 'geospatial_overlaps' | 'GEOSPATIAL_OVERLAPS';
+GeospatialCrosses: 'geospatial_crosses' | 'GEOSPATIAL_CROSSES';
+GeospatialContains: 'geospatial_contains' | 'GEOSPATIAL_CONTAINS';
+GeospatialIntersects : 'geospatial_intersects' | 'GEOSPATIAL_INTERSECTS';
+GeospatialWithin :'geospatial_within' | 'GEOSPATIAL_WITHIN';
 
 BooleanConstant: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE';
 
