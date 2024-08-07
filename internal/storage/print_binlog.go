@@ -368,6 +368,7 @@ func printPayloadValues(colType schemapb.DataType, reader PayloadReaderInterface
 		for i, v := range valids {
 			fmt.Printf("\t\t%d : %v\n", i, v)
 		}
+	// print the wkb bytes
 	case schemapb.DataType_GeoSpatial:
 		rows, err := reader.GetPayloadLengthFromReader()
 		if err != nil {
@@ -378,7 +379,7 @@ func printPayloadValues(colType schemapb.DataType, reader PayloadReaderInterface
 			return err
 		}
 		for i := 0; i < rows; i++ {
-			fmt.Printf("\t\t%d : %s\n", i, val[i])
+			fmt.Printf("\t\t%d : 0x%02X\n", i, val[i])
 		}
 		for i, v := range valids {
 			fmt.Printf("\t\t%d : %v\n", i, v)
