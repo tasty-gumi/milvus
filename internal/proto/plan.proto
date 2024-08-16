@@ -132,7 +132,7 @@ message JSONContainsExpr {
 
 message GISFunctionFilterExpr{
   ColumnInfo column_info = 1;
-  string wkb_string = 2;
+  string wkt_string = 2;
   enum GISOp {
     Invalid = 0;
     Equals = 1;

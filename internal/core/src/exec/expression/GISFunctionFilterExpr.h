@@ -32,6 +32,12 @@ class PhyGISFunctionFilterExpr : public SegmentExpr {
     Eval(EvalCtx& context, VectorPtr& result) override;
 
  private:
+    //  VectorPtr
+    //  EvalForIndexSegment();
+
+    VectorPtr
+    EvalForDataSegment();
+
  private:
     std::shared_ptr<const milvus::expr::GISFunctioinFilterExpr> expr_;
 };
