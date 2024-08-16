@@ -21,6 +21,7 @@ set(MILVUS_EXEC_SRCS
         expression/AlwaysTrueExpr.cpp
         expression/CompareExpr.cpp
         expression/JsonContainsExpr.cpp
+        expression/GISFunctionFilterExpr.cpp
         expression/ExistsExpr.cpp
         operator/FilterBits.cpp
         operator/Operator.cpp
