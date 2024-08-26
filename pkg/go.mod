@@ -11,7 +11,6 @@ require (
 	github.com/confluentinc/confluent-kafka-go v1.9.1
 	github.com/containerd/cgroups/v3 v3.0.3
 	github.com/expr-lang/expr v1.15.7
-	github.com/golang/protobuf v1.5.4
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	github.com/klauspost/compress v1.17.7
 	github.com/milvus-io/milvus-proto/go-api/v2 v2.3.4-0.20240815123953-6dab6fcd6454
@@ -32,6 +31,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c
 	github.com/tikv/client-go/v2 v2.0.4
+	github.com/twpayne/go-geom v1.4.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	github.com/x448/float16 v0.8.4
 	go.etcd.io/etcd/client/v3 v3.5.5
@@ -93,6 +93,7 @@ require (
 	github.com/godbus/dbus/v5 v5.0.4 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -154,7 +155,6 @@ require (
 	github.com/tklauser/numcpus v0.4.0 // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802 // indirect
 	github.com/twmb/murmur3 v1.1.3 // indirect
-	github.com/twpayne/go-geom v1.4.0 // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
 	go.etcd.io/bbolt v1.3.6 // indirect

@@ -404,8 +404,9 @@ queryNode:
     # 2. If set to "disable" original vector data will only be loaded into the chunk cache during search/query.
     warmup: disable
   mmap:
-    mmapEnabled: false # Enable mmap for loading data
-    growingMmapEnabled: false # Enable mmap for using in growing raw data
+    mmapEnabled: true # Enable mmap for loading data
+    mmapDirPath: /tmp/mmap #Set memory-mapped directory path, if you leave mmapDirPath unspecified, the memory-mapped files will be stored in {localStorage.path}/ mmap by default. 
+    growingMmapEnabled: true # Enable mmap for using in growing raw data
     fixedFileSizeForMmapAlloc: 1 # tmp file size for mmap chunk manager
     maxDiskUsagePercentageForMmapAlloc: 50 # disk percentage used in mmap chunk manager
   lazyload:

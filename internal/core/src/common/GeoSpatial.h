@@ -38,6 +38,7 @@ class GeoSpatial {
 
     GeoSpatial(GeoSpatial&& other) noexcept
         : wkb_data_(std::move(other.wkb_data_)),
+          size_(std::move(other.size_)),
           geometry_(std::move(other.geometry_)) {
     }
 
@@ -54,6 +55,7 @@ class GeoSpatial {
     operator=(GeoSpatial&& other) noexcept {
         if (this != &other) {
             wkb_data_ = std::move(other.wkb_data_);
+            size_ = std::move(other.size_);
             geometry_ = std::move(other.geometry_);
         }
         return *this;
@@ -88,7 +90,6 @@ class GeoSpatial {
         return geometry_;
     }
 
-    //only expose read only ptr to external env
     const unsigned char*
     data() const {
         return wkb_data_;

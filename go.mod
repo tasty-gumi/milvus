@@ -60,7 +60,7 @@ require (
 require (
 	github.com/bits-and-blooms/bitset v1.10.0
 	github.com/bytedance/sonic v1.9.1
-	github.com/cenkalti/backoff/v4 v4.2.1
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/cockroachdb/redact v1.1.3
 	github.com/greatroar/blobloom v0.0.0-00010101000000-000000000000
 	github.com/jolestar/go-commons-pool/v2 v2.1.2

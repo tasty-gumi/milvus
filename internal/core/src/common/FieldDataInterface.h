@@ -422,8 +422,10 @@ class FieldDataStringImpl : public FieldDataImpl<std::string, true> {
 class FieldDataGeoSpatialImpl : public FieldDataImpl<std::string, true> {
  public:
     explicit FieldDataGeoSpatialImpl(DataType data_type,
+                                     bool nullable,
                                      int64_t total_num_rows = 0)
-        : FieldDataImpl<std::string, true>(1, data_type, total_num_rows) {
+        : FieldDataImpl<std::string, true>(
+              1, data_type, nullable, total_num_rows) {
     }
 
     int64_t
