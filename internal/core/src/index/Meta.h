@@ -45,7 +45,12 @@ constexpr const char* MARISA_TRIE = "Trie";
 constexpr const char* INVERTED_INDEX_TYPE = "INVERTED";
 constexpr const char* BITMAP_INDEX_TYPE = "BITMAP";
 constexpr const char* HYBRID_INDEX_TYPE = "HYBRID";
+constexpr const char* H3_INDEX_TYPE = "H3";
 
+//below meta key of store H3 indexes
+constexpr const char* H3_INDEX_NUM_ROWS = "H3_indexed_num_rows";
+constexpr const char* H3_INDEX_NULL_OFFSET = "H3_index_null_offset";
+constexpr const char* H3_INDEX_DATA = "H3_index_data";
 // index meta
 constexpr const char* COLLECTION_ID = "collection_id";
 constexpr const char* PARTITION_ID = "partition_id";

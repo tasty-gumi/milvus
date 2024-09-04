@@ -44,7 +44,8 @@ class MilvusConan(ConanFile):
         "abseil/20230125.3#dad7cc4c83bbd44c1f1cc9cc4d97ac88",
         "roaring/3.0.0#25a703f80eda0764a31ef939229e202d",
         "grpc/1.50.1@milvus/dev#75103960d1cac300cf425ccfccceac08",
-        "gdal/3.5.3"
+        "gdal/3.5.3",
+        "h3/4.1.0#00f4a18f7b6d4cd8447f2439373dd4c8"
     )
     generators = ("cmake", "cmake_find_package")
     default_options = {

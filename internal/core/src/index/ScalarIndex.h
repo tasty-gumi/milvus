@@ -35,6 +35,7 @@ enum class ScalarIndexType {
     MARISA,
     INVERTED,
     HYBRID,
+    H3,
 };
 
 inline std::string
@@ -52,6 +53,8 @@ ToString(ScalarIndexType type) {
             return "INVERTED";
         case ScalarIndexType::HYBRID:
             return "HYBRID";
+        case ScalarIndexType::H3:
+            return "H3";
         default:
             return "UNKNOWN";
     }

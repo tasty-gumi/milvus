@@ -39,6 +39,7 @@ const (
 	IndexTrie    IndexType = "Trie"
 	IndexBitmap  IndexType = "BITMAP"
 	IndexHybrid  IndexType = "HYBRID"
+	IndexH3      IndexType = "H3"
 
 	AutoIndex IndexType = "AUTOINDEX"
 )

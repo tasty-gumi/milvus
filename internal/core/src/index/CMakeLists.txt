@@ -21,6 +21,7 @@ set(INDEX_FILES
         InvertedIndexTantivy.cpp
         BitmapIndex.cpp
         HybridScalarIndex.cpp
+        H3Index.cpp
         )
 
 milvus_add_pkg_config("milvus_index")
