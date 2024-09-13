@@ -1,7 +1,13 @@
 #include "GISFunctionFilterExpr.h"
+#include <cstddef>
+#include <string>
 #include "common/EasyAssert.h"
 #include "common/GeoSpatial.h"
 #include "common/Types.h"
+#include "common/Vector.h"
+#include "h3/h3api.h"
+#include "index/H3Index.h"
+#include "index/ScalarIndex.h"
 #include "pb/plan.pb.h"
 namespace milvus {
 namespace exec {
@@ -12,11 +18,35 @@ PhyGISFunctionFilterExpr::Eval(EvalCtx& context, VectorPtr& result) {
                "unsupported data type: {}",
                expr_->column_.data_type_);
     if (is_index_mode_) {
-        // result = EvalForIndexSegment();
-        PanicInfo(NotImplemented, "index for geos not implement");
+        result = EvalForIndexSegment();
     } else {
         result = EvalForDataSegment();
     }
+}
+
+VectorPtr
+PhyGISFunctionFilterExpr::EvalForIndexSegment() {
+    using Index = index::ScalarIndex<std::string>;
+    auto real_batch_size = GetNextBatchSize();
+    if (real_batch_size == 0) {
+        return nullptr;
+    }
+    auto& right_source = expr_->wkb_;
+    auto execute_sub_batch = [this](Index* index_ptr) {
+        //now only consider 1 row in query
+        index::GeoH3Index* ptr = dynamic_cast<index::GeoH3Index*>(index_ptr);
+        AssertInfo(ptr != nullptr,
+                   "cast from index::ScalarIndex<std::string> to "
+                   "index::GeoH3Index failed");
+        return ptr->ExecGeoRelations(1, &this->expr_->wkb_, this->expr_->op_);
+    };
+    auto res = ProcessIndexChunks<std::string>(execute_sub_batch);
+    AssertInfo(res.size() == real_batch_size,
+               "internal error: expr processed rows {} not equal "
+               "expect batch size {}",
+               res.size(),
+               real_batch_size);
+    return std::make_shared<ColumnVector>(std::move(res));
 }
 
 VectorPtr
@@ -173,11 +203,6 @@ PhyGISFunctionFilterExpr::EvalForDataSegment() {
     }
     return res_vec;
 }
-
-// VectorPtr
-// PhyGISFunctionFilterExpr::EvalForIndexSegment() {
-//     // TODO
-// }
 
 }  //namespace exec
 }  // namespace milvus

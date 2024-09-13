@@ -1,5 +1,6 @@
 #include "common/EasyAssert.h"
 #include "index/ScalarIndex.h"
+#include "pb/plan.pb.h"
 #include "storage/MemFileManagerImpl.h"
 #include <h3/h3api.h>
 #include <cstddef>
@@ -21,13 +22,6 @@ class GeoH3Index : public ScalarIndex<std::string> {
         int resolution = 9);
 
     ~GeoH3Index() override = default;
-    // struct IndexNode {
-    //     H3Index index;  //hexagonal grid index provide by H3 system
-    //     std::vector<std::pair<uint32_t, std::string>>
-    //         raw_data;  //offset and wkb data
-    // };
-    // using H3IndexNodesPtr = std::unique_ptr<std::unordered_set<IndexNode>>;
-    // using DataOffsetsPtr = std::unique_ptr<std::vector<uint32_t>>;
 
     BinarySet
     Serialize(const Config& config) override;
@@ -105,12 +99,13 @@ class GeoH3Index : public ScalarIndex<std::string> {
         return true;
     }
 
- private:
-    void
-    setBitmapifIn(
-        OGRGeometry* geometry,
-        std::vector<std::pair<H3Index, std::string>>* indexed_elements);
+    // use H3 index to accelerate spatial relation fliter
+    const TargetBitmap
+    ExecGeoRelations(size_t n,
+                     const std::string* values,
+                     proto::plan::GISFunctionFilterExpr_GISOp op);
 
+ private:
     size_t
     GetIndexDataSize();
 
@@ -127,11 +122,10 @@ class GeoH3Index : public ScalarIndex<std::string> {
     bool is_built_{false};
     proto::schema::FieldSchema schema_;
     //store hexagonal grid index provide by H3 system which can contain all points of a geometry and has the biggest resolution
-    //map it to pair<offset,raw data>
-    std::unordered_map<
-        H3Index,
-        std::unique_ptr<std::vector<std::pair<uint32_t, std::string>>>>
-        data_;
+    //map it to the set of field offsets
+    std::unordered_map<H3Index, std::unique_ptr<std::vector<uint32_t>>>
+        index_data_;
+    std::vector<std::string> raw_data_;
     std::shared_ptr<storage::MemFileManagerImpl> file_manager_;
     int resolution_{0};         //max resolution of all index
     size_t total_num_rows_{0};  // the number of rows has been indexed
