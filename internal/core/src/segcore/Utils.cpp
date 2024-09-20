@@ -22,6 +22,7 @@
 #include "common/Types.h"
 #include "common/Utils.h"
 #include "index/ScalarIndex.h"
+#include "index/H3Index.h"
 #include "mmap/Utils.h"
 #include "log/Log.h"
 #include "storage/RemoteChunkManagerSingleton.h"
@@ -800,6 +801,17 @@ ReverseDataFromIndex(const index::IndexBase* index,
                 raw_data[i] = ptr->Reverse_Lookup(seg_offsets[i]);
             }
             auto obj = scalar_array->mutable_string_data();
+            *(obj->mutable_data()) = {raw_data.begin(), raw_data.end()};
+            break;
+        }
+        case DataType::GEOSPATIAL: {
+            using IndexType = index::GeoH3Index;
+            auto ptr = dynamic_cast<const IndexType*>(index);
+            std::vector<std::string> raw_data(count);
+            for (int64_t i = 0; i < count; ++i) {
+                raw_data[i] = ptr->Reverse_Lookup(seg_offsets[i]);
+            }
+            auto obj = scalar_array->mutable_geospatial_data();
             *(obj->mutable_data()) = {raw_data.begin(), raw_data.end()};
             break;
         }

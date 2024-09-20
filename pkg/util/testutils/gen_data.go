@@ -150,7 +150,7 @@ func GenerateGeospatialArray(numRows int) [][]byte {
 	wkt_array := [6]string{point, linestring, polygon, multipoint, multilinestring, multipolygon}
 	for i := 0; i < numRows; i++ {
 		// data of wkt string bytes ,consider to be process by proxy
-		geomT, _ := wkt.Unmarshal(wkt_array[i])
+		geomT, _ := wkt.Unmarshal(wkt_array[i%6])
 		wkbdata, _ := wkb.Marshal(geomT, wkb.NDR)
 		ret = append(ret, wkbdata)
 	}

@@ -114,16 +114,22 @@ GeoH3Index::LoadWithoutAssemble(const BinarySet& binary_set,
         *(reinterpret_cast<size_t*>(index_meta_buffer->data.get()));
 
     auto index_null_offsets = binary_set.GetByName(H3_INDEX_NULL_OFFSET);
-    std::memcpy(null_offsets_.data(),
-                index_null_offsets->data.get(),
-                index_null_offsets.get()->size);
+    if (index_null_offsets->size != 0) {
+        null_offsets_.resize((size_t)index_null_offsets->size / sizeof(size_t));
+        std::memcpy(null_offsets_.data(),
+                    index_null_offsets->data.get(),
+                    index_null_offsets.get()->size);
+    }
 
     auto index_data_buffer = binary_set.GetByName(H3_INDEX_DATA);
     DeserializeIndexData(index_data_buffer->data.get(),
                          index_data_buffer->size);
-    LOG_INFO("load H3 index with cardinality = {}, num_rows = {}",
-             Cardinality(),
-             total_num_rows_);
+    LOG_INFO(
+        "load H3 index with cardinality = {}, num_rows = "
+        "{},index_data_buffer->size = {}",
+        Cardinality(),
+        total_num_rows_,
+        index_data_buffer->size);
     is_built_ = true;
 }
 
@@ -162,7 +168,7 @@ GeoH3Index::Serialize(const Config& config) {
     uint8_t* data_ptr = index_data.get();
     SerializeIndexData(data_ptr);
 
-    size_t byte_size = sizeof(int64_t) * null_offsets_.size();
+    size_t byte_size = sizeof(size_t) * null_offsets_.size();
     std::shared_ptr<uint8_t[]> index_null_offsets(new uint8_t[byte_size]);
     std::memcpy(index_null_offsets.get(), null_offsets_.data(), byte_size);
 
@@ -200,12 +206,14 @@ GeoH3Index::BuildWithFieldData(const std::vector<FieldDataPtr>& field_datas) {
 
 void
 GeoH3Index::Load(const BinarySet& index_binary, const Config& config) {
+    LOG_INFO("start load H3 index with index_binary");
     milvus::Assemble(const_cast<BinarySet&>(index_binary));
     LoadWithoutAssemble(index_binary, config);
 }
 
 void
 GeoH3Index::Load(milvus::tracer::TraceContext ctx, const Config& config) {
+    LOG_INFO("start load H3 index with index_files");
     auto index_files =
         GetValueFromConfig<std::vector<std::string>>(config, "index_files");
     AssertInfo(index_files.has_value(),
