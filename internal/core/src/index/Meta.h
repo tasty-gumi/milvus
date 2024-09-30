@@ -29,6 +29,12 @@ constexpr const char* PREFIX_VALUE = "prefix_value";
 // below configurations will be persistent, do not edit them.
 constexpr const char* MARISA_TRIE_INDEX = "marisa_trie_index";
 constexpr const char* MARISA_STR_IDS = "marisa_trie_str_ids";
+constexpr const char* H3_INDEX_TYPE = "H3";
+
+//below meta key of store H3 indexes
+constexpr const char* H3_INDEX_NUM_ROWS = "H3_indexed_num_rows";
+constexpr const char* H3_INDEX_NULL_OFFSET = "H3_index_null_offset";
+constexpr const char* H3_INDEX_DATA = "H3_index_data";
 
 // below meta key of store bitmap indexes
 constexpr const char* BITMAP_INDEX_DATA = "bitmap_index_data";

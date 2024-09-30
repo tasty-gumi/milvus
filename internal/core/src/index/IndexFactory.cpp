@@ -26,6 +26,7 @@
 #include "index/ScalarIndexSort.h"
 #include "index/StringIndexMarisa.h"
 #include "index/BoolIndex.h"
+#include "index/H3Index.h"
 #include "index/InvertedIndexTantivy.h"
 #include "index/HybridScalarIndex.h"
 
@@ -152,7 +153,11 @@ IndexBasePtr
 IndexFactory::CreateComplexScalarIndex(
     IndexType index_type,
     const storage::FileManagerContext& file_manager_context) {
-    PanicInfo(Unsupported, "Complex index not supported now");
+    if (index_type == H3_INDEX_TYPE) {
+        return std::make_unique<GeoH3Index>(file_manager_context);
+    } else {
+        PanicInfo(Unsupported, "Complex index not supported now");
+    }
 }
 
 IndexBasePtr
@@ -176,7 +181,8 @@ IndexFactory::CreateScalarIndex(
             return CreateCompositeScalarIndex(create_index_info.index_type,
                                               file_manager_context);
         }
-        case DataType::JSON: {
+        case DataType::JSON:
+        case DataType::GEOSPATIAL: {
             return CreateComplexScalarIndex(create_index_info.index_type,
                                             file_manager_context);
         }

@@ -701,6 +701,7 @@ AppendIndexStorageInfo(CBuildIndexInfo c_build_index_info,
 
 CStatus
 SerializeIndexAndUpLoad(CIndex index, CBinarySet* c_binary_set) {
+    LOG_INFO("Cgo called Cpp function SerializeIndexAndUpLoad");
     auto status = CStatus();
     try {
         AssertInfo(
