@@ -26,6 +26,7 @@
 #include "exec/expression/ConjunctExpr.h"
 #include "exec/expression/ExistsExpr.h"
 #include "exec/expression/GISFunctionFilterExpr.h"
+#include "exec/expression/GISFunctionFilterExpr.h"
 #include "exec/expression/JsonContainsExpr.h"
 #include "exec/expression/LogicalBinaryExpr.h"
 #include "exec/expression/LogicalUnaryExpr.h"

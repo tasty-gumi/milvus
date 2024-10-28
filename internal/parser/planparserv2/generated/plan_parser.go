@@ -46,6 +46,11 @@ func planParserInit() {
 		"GeospatialIntersects", "GeospatialWithin", "BooleanConstant", "IntegerConstant",
 		"FloatingConstant", "Identifier", "StringLiteral", "JSONIdentifier",
 		"Whitespace", "Newline",
+		"ArrayContainsAll", "ArrayContainsAny", "ArrayLength", "GeospatialEuqals",
+		"GeospatialTouches", "GeospatialOverlaps", "GeospatialCrosses", "GeospatialContains",
+		"GeospatialIntersects", "GeospatialWithin", "BooleanConstant", "IntegerConstant",
+		"FloatingConstant", "Identifier", "StringLiteral", "JSONIdentifier",
+		"Whitespace", "Newline",
 	}
 	staticData.RuleNames = []string{
 		"expr",
@@ -229,6 +234,60 @@ const (
 	PlanParserJSONIdentifier       = 51
 	PlanParserWhitespace           = 52
 	PlanParserNewline              = 53
+	PlanParserEOF                  = antlr.TokenEOF
+	PlanParserT__0                 = 1
+	PlanParserT__1                 = 2
+	PlanParserT__2                 = 3
+	PlanParserT__3                 = 4
+	PlanParserT__4                 = 5
+	PlanParserLT                   = 6
+	PlanParserLE                   = 7
+	PlanParserGT                   = 8
+	PlanParserGE                   = 9
+	PlanParserEQ                   = 10
+	PlanParserNE                   = 11
+	PlanParserLIKE                 = 12
+	PlanParserEXISTS               = 13
+	PlanParserTEXTMATCH            = 14
+	PlanParserADD                  = 15
+	PlanParserSUB                  = 16
+	PlanParserMUL                  = 17
+	PlanParserDIV                  = 18
+	PlanParserMOD                  = 19
+	PlanParserPOW                  = 20
+	PlanParserSHL                  = 21
+	PlanParserSHR                  = 22
+	PlanParserBAND                 = 23
+	PlanParserBOR                  = 24
+	PlanParserBXOR                 = 25
+	PlanParserAND                  = 26
+	PlanParserOR                   = 27
+	PlanParserBNOT                 = 28
+	PlanParserNOT                  = 29
+	PlanParserIN                   = 30
+	PlanParserEmptyArray           = 31
+	PlanParserJSONContains         = 32
+	PlanParserJSONContainsAll      = 33
+	PlanParserJSONContainsAny      = 34
+	PlanParserArrayContains        = 35
+	PlanParserArrayContainsAll     = 36
+	PlanParserArrayContainsAny     = 37
+	PlanParserArrayLength          = 38
+	PlanParserGeospatialEuqals     = 39
+	PlanParserGeospatialTouches    = 40
+	PlanParserGeospatialOverlaps   = 41
+	PlanParserGeospatialCrosses    = 42
+	PlanParserGeospatialContains   = 43
+	PlanParserGeospatialIntersects = 44
+	PlanParserGeospatialWithin     = 45
+	PlanParserBooleanConstant      = 46
+	PlanParserIntegerConstant      = 47
+	PlanParserFloatingConstant     = 48
+	PlanParserIdentifier           = 49
+	PlanParserStringLiteral        = 50
+	PlanParserJSONIdentifier       = 51
+	PlanParserWhitespace           = 52
+	PlanParserNewline              = 53
 )
 
 // PlanParserRULE_expr is the PlanParser rule.
@@ -286,6 +345,46 @@ func (s *ExprContext) GetRuleContext() antlr.RuleContext {
 
 func (s *ExprContext) ToStringTree(ruleNames []string, recog antlr.Recognizer) string {
 	return antlr.TreesStringTree(s, ruleNames, recog)
+}
+
+type GeospatialEuqalsContext struct {
+	ExprContext
+}
+
+func NewGeospatialEuqalsContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *GeospatialEuqalsContext {
+	var p = new(GeospatialEuqalsContext)
+
+	InitEmptyExprContext(&p.ExprContext)
+	p.parser = parser
+	p.CopyAll(ctx.(*ExprContext))
+
+	return p
+}
+
+func (s *GeospatialEuqalsContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *GeospatialEuqalsContext) GeospatialEuqals() antlr.TerminalNode {
+	return s.GetToken(PlanParserGeospatialEuqals, 0)
+}
+
+func (s *GeospatialEuqalsContext) Identifier() antlr.TerminalNode {
+	return s.GetToken(PlanParserIdentifier, 0)
+}
+
+func (s *GeospatialEuqalsContext) StringLiteral() antlr.TerminalNode {
+	return s.GetToken(PlanParserStringLiteral, 0)
+}
+
+func (s *GeospatialEuqalsContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case PlanVisitor:
+		return t.VisitGeospatialEuqals(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
 }
 
 type GeospatialEuqalsContext struct {
@@ -462,6 +561,46 @@ func (s *FloatingContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	switch t := visitor.(type) {
 	case PlanVisitor:
 		return t.VisitFloating(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
+type GeospatialContainsContext struct {
+	ExprContext
+}
+
+func NewGeospatialContainsContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *GeospatialContainsContext {
+	var p = new(GeospatialContainsContext)
+
+	InitEmptyExprContext(&p.ExprContext)
+	p.parser = parser
+	p.CopyAll(ctx.(*ExprContext))
+
+	return p
+}
+
+func (s *GeospatialContainsContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *GeospatialContainsContext) GeospatialContains() antlr.TerminalNode {
+	return s.GetToken(PlanParserGeospatialContains, 0)
+}
+
+func (s *GeospatialContainsContext) Identifier() antlr.TerminalNode {
+	return s.GetToken(PlanParserIdentifier, 0)
+}
+
+func (s *GeospatialContainsContext) StringLiteral() antlr.TerminalNode {
+	return s.GetToken(PlanParserStringLiteral, 0)
+}
+
+func (s *GeospatialContainsContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case PlanVisitor:
+		return t.VisitGeospatialContains(s)
 
 	default:
 		return t.VisitChildren(s)
@@ -822,6 +961,46 @@ func (s *LikeContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	switch t := visitor.(type) {
 	case PlanVisitor:
 		return t.VisitLike(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
+type GeospatialWithinContext struct {
+	ExprContext
+}
+
+func NewGeospatialWithinContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *GeospatialWithinContext {
+	var p = new(GeospatialWithinContext)
+
+	InitEmptyExprContext(&p.ExprContext)
+	p.parser = parser
+	p.CopyAll(ctx.(*ExprContext))
+
+	return p
+}
+
+func (s *GeospatialWithinContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *GeospatialWithinContext) GeospatialWithin() antlr.TerminalNode {
+	return s.GetToken(PlanParserGeospatialWithin, 0)
+}
+
+func (s *GeospatialWithinContext) Identifier() antlr.TerminalNode {
+	return s.GetToken(PlanParserIdentifier, 0)
+}
+
+func (s *GeospatialWithinContext) StringLiteral() antlr.TerminalNode {
+	return s.GetToken(PlanParserStringLiteral, 0)
+}
+
+func (s *GeospatialWithinContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case PlanVisitor:
+		return t.VisitGeospatialWithin(s)
 
 	default:
 		return t.VisitChildren(s)
@@ -1580,6 +1759,46 @@ func (s *GeospatialTouchesContext) Accept(visitor antlr.ParseTreeVisitor) interf
 	}
 }
 
+type GeospatialTouchesContext struct {
+	ExprContext
+}
+
+func NewGeospatialTouchesContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *GeospatialTouchesContext {
+	var p = new(GeospatialTouchesContext)
+
+	InitEmptyExprContext(&p.ExprContext)
+	p.parser = parser
+	p.CopyAll(ctx.(*ExprContext))
+
+	return p
+}
+
+func (s *GeospatialTouchesContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *GeospatialTouchesContext) GeospatialTouches() antlr.TerminalNode {
+	return s.GetToken(PlanParserGeospatialTouches, 0)
+}
+
+func (s *GeospatialTouchesContext) Identifier() antlr.TerminalNode {
+	return s.GetToken(PlanParserIdentifier, 0)
+}
+
+func (s *GeospatialTouchesContext) StringLiteral() antlr.TerminalNode {
+	return s.GetToken(PlanParserStringLiteral, 0)
+}
+
+func (s *GeospatialTouchesContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case PlanVisitor:
+		return t.VisitGeospatialTouches(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
 type RelationalContext struct {
 	ExprContext
 	op antlr.Token
@@ -2006,6 +2225,46 @@ func (s *RangeContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	switch t := visitor.(type) {
 	case PlanVisitor:
 		return t.VisitRange(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
+type GeospatialIntersectsContext struct {
+	ExprContext
+}
+
+func NewGeospatialIntersectsContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *GeospatialIntersectsContext {
+	var p = new(GeospatialIntersectsContext)
+
+	InitEmptyExprContext(&p.ExprContext)
+	p.parser = parser
+	p.CopyAll(ctx.(*ExprContext))
+
+	return p
+}
+
+func (s *GeospatialIntersectsContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *GeospatialIntersectsContext) GeospatialIntersects() antlr.TerminalNode {
+	return s.GetToken(PlanParserGeospatialIntersects, 0)
+}
+
+func (s *GeospatialIntersectsContext) Identifier() antlr.TerminalNode {
+	return s.GetToken(PlanParserIdentifier, 0)
+}
+
+func (s *GeospatialIntersectsContext) StringLiteral() antlr.TerminalNode {
+	return s.GetToken(PlanParserStringLiteral, 0)
+}
+
+func (s *GeospatialIntersectsContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case PlanVisitor:
+		return t.VisitGeospatialIntersects(s)
 
 	default:
 		return t.VisitChildren(s)
@@ -2483,6 +2742,46 @@ func (s *BitAndContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
 	switch t := visitor.(type) {
 	case PlanVisitor:
 		return t.VisitBitAnd(s)
+
+	default:
+		return t.VisitChildren(s)
+	}
+}
+
+type GeospatialOverlapsContext struct {
+	ExprContext
+}
+
+func NewGeospatialOverlapsContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *GeospatialOverlapsContext {
+	var p = new(GeospatialOverlapsContext)
+
+	InitEmptyExprContext(&p.ExprContext)
+	p.parser = parser
+	p.CopyAll(ctx.(*ExprContext))
+
+	return p
+}
+
+func (s *GeospatialOverlapsContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *GeospatialOverlapsContext) GeospatialOverlaps() antlr.TerminalNode {
+	return s.GetToken(PlanParserGeospatialOverlaps, 0)
+}
+
+func (s *GeospatialOverlapsContext) Identifier() antlr.TerminalNode {
+	return s.GetToken(PlanParserIdentifier, 0)
+}
+
+func (s *GeospatialOverlapsContext) StringLiteral() antlr.TerminalNode {
+	return s.GetToken(PlanParserStringLiteral, 0)
+}
+
+func (s *GeospatialOverlapsContext) Accept(visitor antlr.ParseTreeVisitor) interface{} {
+	switch t := visitor.(type) {
+	case PlanVisitor:
+		return t.VisitGeospatialOverlaps(s)
 
 	default:
 		return t.VisitChildren(s)
@@ -3053,6 +3352,7 @@ func (p *PlanParser) expr(_p int) (localctx IExprContext) {
 		{
 			p.SetState(57)
 			p.Match(PlanParserGeospatialEuqals)
+			p.Match(PlanParserGeospatialEuqals)
 			if p.HasError() {
 				// Recognition error - abort rule
 				goto errorExit
@@ -3449,6 +3749,7 @@ func (p *PlanParser) expr(_p int) (localctx IExprContext) {
 			}
 		}
 		{
+			p.SetState(102)
 			p.SetState(102)
 			p.Match(PlanParserT__1)
 			if p.HasError() {

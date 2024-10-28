@@ -11,6 +11,10 @@ func (v *BasePlanVisitor) VisitGeospatialEuqals(ctx *GeospatialEuqalsContext) in
 	return v.VisitChildren(ctx)
 }
 
+func (v *BasePlanVisitor) VisitGeospatialEuqals(ctx *GeospatialEuqalsContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BasePlanVisitor) VisitJSONIdentifier(ctx *JSONIdentifierContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -24,6 +28,10 @@ func (v *BasePlanVisitor) VisitString(ctx *StringContext) interface{} {
 }
 
 func (v *BasePlanVisitor) VisitFloating(ctx *FloatingContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BasePlanVisitor) VisitGeospatialContains(ctx *GeospatialContainsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -48,6 +56,10 @@ func (v *BasePlanVisitor) VisitIdentifier(ctx *IdentifierContext) interface{} {
 }
 
 func (v *BasePlanVisitor) VisitLike(ctx *LikeContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BasePlanVisitor) VisitGeospatialWithin(ctx *GeospatialWithinContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -99,6 +111,10 @@ func (v *BasePlanVisitor) VisitGeospatialTouches(ctx *GeospatialTouchesContext) 
 	return v.VisitChildren(ctx)
 }
 
+func (v *BasePlanVisitor) VisitGeospatialTouches(ctx *GeospatialTouchesContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BasePlanVisitor) VisitRelational(ctx *RelationalContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -120,6 +136,10 @@ func (v *BasePlanVisitor) VisitJSONContains(ctx *JSONContainsContext) interface{
 }
 
 func (v *BasePlanVisitor) VisitRange(ctx *RangeContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BasePlanVisitor) VisitGeospatialIntersects(ctx *GeospatialIntersectsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -152,6 +172,10 @@ func (v *BasePlanVisitor) VisitExists(ctx *ExistsContext) interface{} {
 }
 
 func (v *BasePlanVisitor) VisitBitAnd(ctx *BitAndContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BasePlanVisitor) VisitGeospatialOverlaps(ctx *GeospatialOverlapsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 

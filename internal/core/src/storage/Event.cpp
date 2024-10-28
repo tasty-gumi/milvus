@@ -294,6 +294,17 @@ BaseEventData::Serialize() {
             }
             break;
         }
+        case DataType::GEOSPATIAL: {
+            for (size_t offset = 0; offset < field_data->get_num_rows();
+                 ++offset) {
+                auto geo_ptr = static_cast<const std::string*>(
+                    field_data->RawValue(offset));
+                payload_writer->add_one_binary_payload(
+                    reinterpret_cast<const uint8_t*>(geo_ptr->data()),
+                    geo_ptr->size());
+            }
+            break;
+        }
         case DataType::VECTOR_SPARSE_FLOAT: {
             for (size_t offset = 0; offset < field_data->get_num_rows();
                  ++offset) {
