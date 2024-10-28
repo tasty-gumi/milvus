@@ -58,6 +58,9 @@ type PlanVisitor interface {
 	// Visit a parse tree produced by PlanParser#Call.
 	VisitCall(ctx *CallContext) interface{}
 
+	// Visit a parse tree produced by PlanParser#GeospatialCrosses.
+	VisitGeospatialCrosses(ctx *GeospatialCrossesContext) interface{}
+
 	// Visit a parse tree produced by PlanParser#ReverseRange.
 	VisitReverseRange(ctx *ReverseRangeContext) interface{}
 

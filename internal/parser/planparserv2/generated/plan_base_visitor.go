@@ -75,6 +75,10 @@ func (v *BasePlanVisitor) VisitCall(ctx *CallContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BasePlanVisitor) VisitGeospatialCrosses(ctx *GeospatialCrossesContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BasePlanVisitor) VisitReverseRange(ctx *ReverseRangeContext) interface{} {
 	return v.VisitChildren(ctx)
 }
