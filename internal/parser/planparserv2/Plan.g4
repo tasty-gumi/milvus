@@ -23,13 +23,13 @@ expr:
 	| (JSONContains | ArrayContains)'('expr',' expr')'                           # JSONContains
 	| (JSONContainsAll | ArrayContainsAll)'('expr',' expr')'                     # JSONContainsAll
 	| (JSONContainsAny | ArrayContainsAny)'('expr',' expr')'                     # JSONContainsAny
-	| GeospatialEuqals'('Identifier','StringLiteral')'				             # GeospatialEuqals	
-	| GeospatialTouches'('Identifier','StringLiteral')'				             # GeospatialTouches
-	| GeospatialOverlaps'('Identifier','StringLiteral')'						 # GeospatialOverlaps
-	| GeospatialCrosses'('Identifier','StringLiteral')'							 # GeospatialCrosses
-	| GeospatialContains'('Identifier','StringLiteral')'						 # GeospatialContains
-	| GeospatialIntersects'('Identifier','StringLiteral')'						 # GeospatialIntersects
-	| GeospatialWithin'('Identifier','StringLiteral')'							 # GeospatialWithin
+	| STEuqals'('Identifier','StringLiteral')'				                     # STEuqals	
+	| STTouches'('Identifier','StringLiteral')'				             		 # STTouches
+	| STOverlaps'('Identifier','StringLiteral')'						 		 # STOverlaps
+	| STCrosses'('Identifier','StringLiteral')'									 # STCrosses
+	| STContains'('Identifier','StringLiteral')'						 		 # STContains
+	| STIntersects'('Identifier','StringLiteral')'								 # STIntersects
+	| STWithin'('Identifier','StringLiteral')'									 # STWithin
 	| ArrayLength'('(Identifier | JSONIdentifier)')'                             # ArrayLength
 	| Identifier '(' ( expr (',' expr )* ','? )? ')'                             # Call
 	| expr op1 = (LT | LE) (Identifier | JSONIdentifier) op2 = (LT | LE) expr	 # Range
@@ -94,13 +94,13 @@ ArrayContainsAll: 'array_contains_all' | 'ARRAY_CONTAINS_ALL';
 ArrayContainsAny: 'array_contains_any' | 'ARRAY_CONTAINS_ANY';
 ArrayLength: 'array_length' | 'ARRAY_LENGTH';
 
-GeospatialEuqals:'geospatial_equals' | 'GEOSPATIAL_EQUALS';
-GeospatialTouches:'geospatial_touches' | 'GEOSPATIAL_TOUCHES';
-GeospatialOverlaps: 'geospatial_overlaps' | 'GEOSPATIAL_OVERLAPS';
-GeospatialCrosses: 'geospatial_crosses' | 'GEOSPATIAL_CROSSES';
-GeospatialContains: 'geospatial_contains' | 'GEOSPATIAL_CONTAINS';
-GeospatialIntersects : 'geospatial_intersects' | 'GEOSPATIAL_INTERSECTS';
-GeospatialWithin :'geospatial_within' | 'GEOSPATIAL_WITHIN';
+STEuqals:'st_equals' | 'ST_EQUALS';
+STTouches:'st_touches' | 'ST_TOUCHES';
+STOverlaps: 'st_overlaps' | 'ST_OVERLAPS';
+STCrosses: 'st_crosses' | 'ST_CROSSES';
+STContains: 'st_contains' | 'ST_CONTAINS';
+STIntersects : 'st_intersects' | 'ST_INTERSECTS';
+STWithin :'st_within' | 'ST_WITHIN';
 
 BooleanConstant: 'true' | 'True' | 'TRUE' | 'false' | 'False' | 'FALSE';
 

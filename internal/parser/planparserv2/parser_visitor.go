@@ -1371,18 +1371,18 @@ func (v *ParserVisitor) VisitArrayLength(ctx *parser.ArrayLengthContext) interfa
 	}
 }
 
-func (v *ParserVisitor) VisitGeospatialEuqals(ctx *parser.GeospatialEuqalsContext) interface{} {
-	columnInfo, err := v.getChildColumnInfo(ctx.Identifier(), ctx.StringLiteral())
+func (v *ParserVisitor) VisitGeometryEuqals(ctx *parser.STEuqalsContext) interface{} {
+	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
 	}
+	columnInfo := toColumnInfo(childExpr)
 	if columnInfo == nil ||
-		(!typeutil.IsGeospatialType(columnInfo.GetDataType())) {
+		(!typeutil.IsGeometryType(columnInfo.GetDataType())) {
 		return fmt.Errorf(
-			"Euqals operation are only supported on geospatial fields now, got: %s", ctx.GetText())
+			"STEuqals operation are only supported on geometry fields now, got: %s", ctx.GetText())
 	}
-	element := ctx.GetChild(4).(antlr.ParseTree).GetText() // the wkt input
-	// log.Warn(element)
+	element := ctx.StringLiteral().GetText()
 	if err := getError(element); err != nil {
 		return err
 	}
@@ -1401,18 +1401,18 @@ func (v *ParserVisitor) VisitGeospatialEuqals(ctx *parser.GeospatialEuqalsContex
 	}
 }
 
-func (v *ParserVisitor) VisitGeospatialTouches(ctx *parser.GeospatialTouchesContext) interface{} {
-	columnInfo, err := v.getChildColumnInfo(ctx.Identifier(), ctx.StringLiteral())
+func (v *ParserVisitor) VisitGeometryTouches(ctx *parser.STTouchesContext) interface{} {
+	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
 	}
+	columnInfo := toColumnInfo(childExpr)
 	if columnInfo == nil ||
-		(!typeutil.IsGeospatialType(columnInfo.GetDataType())) {
+		(!typeutil.IsGeometryType(columnInfo.GetDataType())) {
 		return fmt.Errorf(
-			"Euqals operation are only supported on geospatial fields now, got: %s", ctx.GetText())
+			"STTouches operation are only supported on geometry fields now, got: %s", ctx.GetText())
 	}
-	element := ctx.GetChild(4).(antlr.ParseTree).GetText() // the wkt input
-	// log.Warn(element)
+	element := ctx.StringLiteral().GetText()
 	if err := getError(element); err != nil {
 		return err
 	}
@@ -1431,17 +1431,18 @@ func (v *ParserVisitor) VisitGeospatialTouches(ctx *parser.GeospatialTouchesCont
 	}
 }
 
-func (v *ParserVisitor) VisitGeospatialOverlaps(ctx *parser.GeospatialOverlapsContext) interface{} {
-	columnInfo, err := v.getChildColumnInfo(ctx.Identifier(), ctx.StringLiteral())
+func (v *ParserVisitor) VisitGeometryOverlaps(ctx *parser.STOverlapsContext) interface{} {
+	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
 	}
+	columnInfo := toColumnInfo(childExpr)
 	if columnInfo == nil ||
-		(!typeutil.IsGeospatialType(columnInfo.GetDataType())) {
+		(!typeutil.IsGeometryType(columnInfo.GetDataType())) {
 		return fmt.Errorf(
-			"Euqals operation are only supported on geospatial fields now, got: %s", ctx.GetText())
+			"STOverlaps operation are only supported on geometry fields now, got: %s", ctx.GetText())
 	}
-	element := ctx.GetChild(4).(antlr.ParseTree).GetText() // the wkt input
+	element := ctx.StringLiteral().GetText()
 	// log.Warn(element)
 	if err := getError(element); err != nil {
 		return err
@@ -1461,17 +1462,18 @@ func (v *ParserVisitor) VisitGeospatialOverlaps(ctx *parser.GeospatialOverlapsCo
 	}
 }
 
-func (v *ParserVisitor) VisitGeospatialCrosses(ctx *parser.GeospatialCrossesContext) interface{} {
-	columnInfo, err := v.getChildColumnInfo(ctx.Identifier(), ctx.StringLiteral())
+func (v *ParserVisitor) VisitGeometryCrosses(ctx *parser.STCrossesContext) interface{} {
+	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
 	}
+	columnInfo := toColumnInfo(childExpr)
 	if columnInfo == nil ||
-		(!typeutil.IsGeospatialType(columnInfo.GetDataType())) {
+		(!typeutil.IsGeometryType(columnInfo.GetDataType())) {
 		return fmt.Errorf(
-			"Euqals operation are only supported on geospatial fields now, got: %s", ctx.GetText())
+			"STCrosses operation are only supported on geometry fields now, got: %s", ctx.GetText())
 	}
-	element := ctx.GetChild(4).(antlr.ParseTree).GetText() // the wkt input
+	element := ctx.StringLiteral().GetText()
 	// log.Warn(element)
 	if err := getError(element); err != nil {
 		return err
@@ -1491,17 +1493,18 @@ func (v *ParserVisitor) VisitGeospatialCrosses(ctx *parser.GeospatialCrossesCont
 	}
 }
 
-func (v *ParserVisitor) VisitGeospatialContains(ctx *parser.GeospatialContainsContext) interface{} {
-	columnInfo, err := v.getChildColumnInfo(ctx.Identifier(), ctx.StringLiteral())
+func (v *ParserVisitor) VisitGeometryContains(ctx *parser.STContainsContext) interface{} {
+	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
 	}
+	columnInfo := toColumnInfo(childExpr)
 	if columnInfo == nil ||
-		(!typeutil.IsGeospatialType(columnInfo.GetDataType())) {
+		(!typeutil.IsGeometryType(columnInfo.GetDataType())) {
 		return fmt.Errorf(
-			"Euqals operation are only supported on geospatial fields now, got: %s", ctx.GetText())
+			"STContains operation are only supported on geometry fields now, got: %s", ctx.GetText())
 	}
-	element := ctx.GetChild(4).(antlr.ParseTree).GetText() // the wkt input
+	element := ctx.StringLiteral().GetText() // the wkt input
 	// log.Warn(element)
 	if err := getError(element); err != nil {
 		return err
@@ -1521,17 +1524,18 @@ func (v *ParserVisitor) VisitGeospatialContains(ctx *parser.GeospatialContainsCo
 	}
 }
 
-func (v *ParserVisitor) VisitGeospatialIntersects(ctx *parser.GeospatialIntersectsContext) interface{} {
-	columnInfo, err := v.getChildColumnInfo(ctx.Identifier(), ctx.StringLiteral())
+func (v *ParserVisitor) VisitGeometryIntersects(ctx *parser.STIntersectsContext) interface{} {
+	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
 	}
+	columnInfo := toColumnInfo(childExpr)
 	if columnInfo == nil ||
-		(!typeutil.IsGeospatialType(columnInfo.GetDataType())) {
+		(!typeutil.IsGeometryType(columnInfo.GetDataType())) {
 		return fmt.Errorf(
-			"Euqals operation are only supported on geospatial fields now, got: %s", ctx.GetText())
+			"STIntersects operation are only supported on geometry fields now, got: %s", ctx.GetText())
 	}
-	element := ctx.GetChild(4).(antlr.ParseTree).GetText() // the wkt input
+	element := ctx.StringLiteral().GetText() // the wkt input
 	// log.Warn(element)
 	if err := getError(element); err != nil {
 		return err
@@ -1551,17 +1555,18 @@ func (v *ParserVisitor) VisitGeospatialIntersects(ctx *parser.GeospatialIntersec
 	}
 }
 
-func (v *ParserVisitor) VisitGeospatialWithin(ctx *parser.GeospatialWithinContext) interface{} {
-	columnInfo, err := v.getChildColumnInfo(ctx.Identifier(), ctx.StringLiteral())
+func (v *ParserVisitor) VisitGeometryWithin(ctx *parser.STWithinContext) interface{} {
+	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
 	}
+	columnInfo := toColumnInfo(childExpr)
 	if columnInfo == nil ||
-		(!typeutil.IsGeospatialType(columnInfo.GetDataType())) {
+		(!typeutil.IsGeometryType(columnInfo.GetDataType())) {
 		return fmt.Errorf(
-			"Euqals operation are only supported on geospatial fields now, got: %s", ctx.GetText())
+			"STWithin operation are only supported on geometry fields now, got: %s", ctx.GetText())
 	}
-	element := ctx.GetChild(4).(antlr.ParseTree).GetText() // the wkt input
+	element := ctx.StringLiteral().GetText() // the wkt input
 	// log.Warn(element)
 	if err := getError(element); err != nil {
 		return err

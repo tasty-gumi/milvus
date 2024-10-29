@@ -7,10 +7,6 @@ type BasePlanVisitor struct {
 	*antlr.BaseParseTreeVisitor
 }
 
-func (v *BasePlanVisitor) VisitGeospatialEuqals(ctx *GeospatialEuqalsContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BasePlanVisitor) VisitJSONIdentifier(ctx *JSONIdentifierContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -24,10 +20,6 @@ func (v *BasePlanVisitor) VisitString(ctx *StringContext) interface{} {
 }
 
 func (v *BasePlanVisitor) VisitFloating(ctx *FloatingContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
-func (v *BasePlanVisitor) VisitGeospatialContains(ctx *GeospatialContainsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -47,11 +39,11 @@ func (v *BasePlanVisitor) VisitIdentifier(ctx *IdentifierContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BasePlanVisitor) VisitLike(ctx *LikeContext) interface{} {
+func (v *BasePlanVisitor) VisitSTIntersects(ctx *STIntersectsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BasePlanVisitor) VisitGeospatialWithin(ctx *GeospatialWithinContext) interface{} {
+func (v *BasePlanVisitor) VisitLike(ctx *LikeContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -75,7 +67,7 @@ func (v *BasePlanVisitor) VisitCall(ctx *CallContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BasePlanVisitor) VisitGeospatialCrosses(ctx *GeospatialCrossesContext) interface{} {
+func (v *BasePlanVisitor) VisitSTCrosses(ctx *STCrossesContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -95,10 +87,6 @@ func (v *BasePlanVisitor) VisitAddSub(ctx *AddSubContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BasePlanVisitor) VisitGeospatialTouches(ctx *GeospatialTouchesContext) interface{} {
-	return v.VisitChildren(ctx)
-}
-
 func (v *BasePlanVisitor) VisitRelational(ctx *RelationalContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -111,6 +99,14 @@ func (v *BasePlanVisitor) VisitTextMatch(ctx *TextMatchContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
+func (v *BasePlanVisitor) VisitSTTouches(ctx *STTouchesContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BasePlanVisitor) VisitSTContains(ctx *STContainsContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
 func (v *BasePlanVisitor) VisitTerm(ctx *TermContext) interface{} {
 	return v.VisitChildren(ctx)
 }
@@ -119,11 +115,11 @@ func (v *BasePlanVisitor) VisitJSONContains(ctx *JSONContainsContext) interface{
 	return v.VisitChildren(ctx)
 }
 
-func (v *BasePlanVisitor) VisitRange(ctx *RangeContext) interface{} {
+func (v *BasePlanVisitor) VisitSTWithin(ctx *STWithinContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BasePlanVisitor) VisitGeospatialIntersects(ctx *GeospatialIntersectsContext) interface{} {
+func (v *BasePlanVisitor) VisitRange(ctx *RangeContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
@@ -155,10 +151,14 @@ func (v *BasePlanVisitor) VisitBitAnd(ctx *BitAndContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
-func (v *BasePlanVisitor) VisitGeospatialOverlaps(ctx *GeospatialOverlapsContext) interface{} {
+func (v *BasePlanVisitor) VisitSTEuqals(ctx *STEuqalsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
 
 func (v *BasePlanVisitor) VisitPower(ctx *PowerContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *BasePlanVisitor) VisitSTOverlaps(ctx *STOverlapsContext) interface{} {
 	return v.VisitChildren(ctx)
 }
