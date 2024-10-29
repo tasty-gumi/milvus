@@ -26,7 +26,7 @@
 #include <vector>
 
 #include "common/FieldMeta.h"
-#include "common/GeoSpatial.h"
+#include "common/Geometry.h"
 #include "common/Types.h"
 #include "mmap/Types.h"
 #include "storage/Util.h"
@@ -137,7 +137,7 @@ WriteFieldData(File& file,
                 }
                 break;
             }
-            case DataType::GEOSPATIAL: {
+            case DataType::GEOMETRY: {
                 // write as: |size|data|size|data......
                 for (ssize_t i = 0; i < data->get_num_rows(); ++i) {
                     indices.push_back(total_written);

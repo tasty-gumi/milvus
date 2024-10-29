@@ -35,7 +35,7 @@
 #include "common/FieldMeta.h"
 #include "common/File.h"
 #include "common/Json.h"
-#include "common/GeoSpatial.h"
+#include "common/Geometry.h"
 #include "common/LoadInfo.h"
 #include "common/Tracer.h"
 #include "common/Types.h"
@@ -382,7 +382,7 @@ SegmentSealedImpl::LoadFieldData(FieldId field_id, FieldDataInfo& data) {
                     column = std::move(var_column);
                     break;
                 }
-                case milvus::DataType::GEOSPATIAL: {
+                case milvus::DataType::GEOMETRY: {
                     auto var_column = std::make_shared<
                         SingleChunkVariableColumn<std::string>>(
                         num_rows, field_meta, get_block_size());
@@ -561,7 +561,7 @@ SegmentSealedImpl::MapFieldData(const FieldId field_id, FieldDataInfo& data) {
                 column = std::move(var_column);
                 break;
             }
-            case milvus::DataType::GEOSPATIAL: {
+            case milvus::DataType::GEOMETRY: {
                 auto var_column =
                     std::make_shared<SingleChunkVariableColumn<std::string>>(
                         file,
@@ -1529,12 +1529,12 @@ SegmentSealedImpl::get_raw_data(FieldId field_id,
             break;
         }
 
-        case DataType::GEOSPATIAL: {
+        case DataType::GEOMETRY: {
             bulk_subscript_ptr_impl<std::string>(column.get(),
                                                  seg_offsets,
                                                  count,
                                                  ret->mutable_scalars()
-                                                     ->mutable_geospatial_data()
+                                                     ->mutable_geometry_data()
                                                      ->mutable_data());
             break;
         }

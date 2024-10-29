@@ -232,9 +232,9 @@ func (s *BulkInsertSuite) run() {
 	// s.Equal(nq*topk, len(searchResult.GetResults().GetScores()))
 }
 
-func (s *BulkInsertSuite) TestGeospatialTypes() {
-	s.testType = schemapb.DataType_GeoSpatial
-	s.expr = "geospatial_equals(" + "testField" + schemapb.DataType_name[int32(s.testType)] + ",'POINT (-84.036 39.997)')"
+func (s *BulkInsertSuite) TestGeometryTypes() {
+	s.testType = schemapb.DataType_Geometry
+	s.expr = "st_equals(" + "testField" + schemapb.DataType_name[int32(s.testType)] + ",'POINT (-84.036 39.997)')"
 	s.run()
 }
 
@@ -266,10 +266,10 @@ func (s *BulkInsertSuite) TestMultiFileTypes() {
 
 		// TODO: not support numpy for SparseFloatVector by now
 		if fileType != importutilv2.Numpy {
-			// s.vecType = schemapb.DataType_SparseFloatVector
-			// s.indexType = indexparamcheck.IndexSparseWand
-			// s.metricType = metric.IP
-			// s.run()
+			s.vecType = schemapb.DataType_SparseFloatVector
+			s.indexType = indexparamcheck.IndexSparseWand
+			s.metricType = metric.IP
+			s.run()
 		}
 	}
 }

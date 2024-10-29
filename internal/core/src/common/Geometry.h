@@ -12,47 +12,52 @@
 
 #include <gdal.h>
 #include <ogr_geometry.h>
+#include <algorithm>
+#include <memory>
 #include <string_view>
 #include "common/EasyAssert.h"
 
 namespace milvus {
 
-class GeoSpatial {
+class Geometry {
  public:
-    GeoSpatial() = default;
+    Geometry() = default;
 
     // all ctr assume that wkb data is valid
-    explicit GeoSpatial(const void* wkb, size_t size) {
-        OGRGeometryFactory::createFromWkb(wkb, nullptr, &geometry_, size);
-        AssertInfo(geometry_ != nullptr,
+    explicit Geometry(const void* wkb, size_t size) {
+        OGRGeometry* geometry = nullptr;
+        OGRGeometryFactory::createFromWkb(wkb, nullptr, &geometry, size);
+
+        AssertInfo(geometry != nullptr,
                    "failed to construct geometry from wkb data");
+        geometry_.reset(geometry);
         to_wkb_internal();
     }
 
-    GeoSpatial(const GeoSpatial& other) {
+    Geometry(const Geometry& other) {
         if (other.IsValid()) {
-            this->geometry_ = other.geometry_->clone();
+            this->geometry_.reset(other.geometry_->clone());
             this->to_wkb_internal();
         }
     }
 
-    GeoSpatial(GeoSpatial&& other) noexcept
+    Geometry(Geometry&& other) noexcept
         : wkb_data_(std::move(other.wkb_data_)),
           size_(std::move(other.size_)),
           geometry_(std::move(other.geometry_)) {
     }
 
-    GeoSpatial&
-    operator=(const GeoSpatial& other) {
+    Geometry&
+    operator=(const Geometry& other) {
         if (this != &other && other.IsValid()) {
-            this->geometry_ = other.geometry_->clone();
+            this->geometry_.reset(other.geometry_->clone());
             this->to_wkb_internal();
         }
         return *this;
     }
 
-    GeoSpatial&
-    operator=(GeoSpatial&& other) noexcept {
+    Geometry&
+    operator=(Geometry&& other) noexcept {
         if (this != &other) {
             wkb_data_ = std::move(other.wkb_data_);
             size_ = std::move(other.size_);
@@ -63,20 +68,17 @@ class GeoSpatial {
 
     operator std::string() const {
         //tmp string created by copy ctr
-        return std::string(reinterpret_cast<const char*>(wkb_data_));
+        return std::string(reinterpret_cast<const char*>(wkb_data_.get()));
     }
 
     operator std::string_view() const {
-        return std::string_view(reinterpret_cast<const char*>(wkb_data_),
+        return std::string_view(reinterpret_cast<const char*>(wkb_data_.get()),
                                 size_);
     }
 
-    ~GeoSpatial() {
+    ~Geometry() {
         if (geometry_) {
-            OGRGeometryFactory::destroyGeometry(geometry_);
-        }
-        if (wkb_data_) {  // the data
-            delete[] wkb_data_;
+            OGRGeometryFactory::destroyGeometry(geometry_.get());
         }
     }
 
@@ -87,12 +89,12 @@ class GeoSpatial {
 
     OGRGeometry*
     GetGeometry() const {
-        return geometry_;
+        return geometry_.get();
     }
 
     const unsigned char*
     data() const {
-        return wkb_data_;
+        return wkb_data_.get();
     }
 
     size_t
@@ -102,38 +104,43 @@ class GeoSpatial {
 
     //spatial relation
     bool
-    equals(const GeoSpatial& other) const {
-        return geometry_->Equals(other.geometry_);
+    equals(const Geometry& other) const {
+        return geometry_->Equals(other.geometry_.get());
     }
 
     bool
-    touches(const GeoSpatial& other) const {
-        return geometry_->Touches(other.geometry_);
+    touches(const Geometry& other) const {
+        return geometry_->Touches(other.geometry_.get());
     }
 
     bool
-    overlaps(const GeoSpatial& other) const {
-        return geometry_->Overlaps(other.geometry_);
+    overlaps(const Geometry& other) const {
+        return geometry_->Overlaps(other.geometry_.get());
     }
 
     bool
-    crosses(const GeoSpatial& other) const {
-        return geometry_->Crosses(other.geometry_);
+    crosses(const Geometry& other) const {
+        return geometry_->Crosses(other.geometry_.get());
     }
 
     bool
-    contains(const GeoSpatial& other) const {
-        return geometry_->Contains(other.geometry_);
+    contains(const Geometry& other) const {
+        return geometry_->Contains(other.geometry_.get());
     }
 
     bool
-    intersects(const GeoSpatial& other) const {
-        return geometry_->Intersects(other.geometry_);
+    intersects(const Geometry& other) const {
+        return geometry_->Intersects(other.geometry_.get());
     }
 
     bool
-    within(const GeoSpatial& other) const {
-        return geometry_->Within(other.geometry_);
+    within(const Geometry& other) const {
+        return geometry_->Within(other.geometry_.get());
+    }
+
+    std::string
+    to_wkt_string() const {
+        return geometry_->exportToWkt();
     }
 
  private:
@@ -141,16 +148,16 @@ class GeoSpatial {
     to_wkb_internal() {
         if (geometry_ && size_ == 0) {
             size_ = geometry_->WkbSize();
-            wkb_data_ = new unsigned char[size_];
+            wkb_data_ = std::make_unique<unsigned char[]>(size_);
             // little-endian order to save wkb
-            geometry_->exportToWkb(wkbNDR, wkb_data_);
+            geometry_->exportToWkb(wkbNDR, wkb_data_.get());
         }
     }
 
     //read write ptr, use to save a OGRGeometry object when need to create new storage file
-    unsigned char* wkb_data_{nullptr};
+    std::unique_ptr<unsigned char[]> wkb_data_{nullptr};
     size_t size_{0};
-    OGRGeometry* geometry_{nullptr};
+    std::unique_ptr<OGRGeometry> geometry_{nullptr};
 };
 
 }  // namespace milvus

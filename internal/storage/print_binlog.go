@@ -371,12 +371,12 @@ func printPayloadValues(colType schemapb.DataType, reader PayloadReaderInterface
 			fmt.Printf("\t\t%d : %v\n", i, v)
 		}
 	// print the wkb bytes
-	case schemapb.DataType_GeoSpatial:
+	case schemapb.DataType_Geometry:
 		rows, err := reader.GetPayloadLengthFromReader()
 		if err != nil {
 			return err
 		}
-		val, valids, err := reader.GetGeospatialFromPayload()
+		val, valids, err := reader.GetGeometryFromPayload()
 		if err != nil {
 			return err
 		}

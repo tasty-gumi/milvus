@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 
+#include "common/Geometry.h"
 #include "exec/expression/function/FunctionFactory.h"
 #include "common/Exception.h"
 #include "common/Schema.h"
@@ -714,18 +715,13 @@ class GISFunctioinFilterExpr : public ITypeFilterExpr {
         : column_(cloumn), op_(op), wkb_(wkb){};
     std::string
     ToString() const override {
-        OGRGeometry* geo = nullptr;
-        OGRGeometryFactory::createFromWkb(
-            wkb_.data(), nullptr, &geo, wkb_.size());
-        if (!geo) {
-            return "";
-        }
+        Geometry geo(wkb_.data(), wkb_.size());
         return fmt::format(
             "GISFunctioinFilterExpr:[Column: {}, Operator: {} "
             "WktValue: {}]",
             column_.ToString(),
             GISFunctionFilterExpr_GISOp_Name(op_),
-            geo->exportToWkt());
+            geo.to_wkt_string());
     }
 
  public:

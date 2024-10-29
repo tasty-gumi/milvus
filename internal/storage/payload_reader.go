@@ -98,8 +98,8 @@ func (r *PayloadReader) GetDataFromPayload() (interface{}, []bool, int, error) {
 	case schemapb.DataType_JSON:
 		val, validData, err := r.GetJSONFromPayload()
 		return val, validData, 0, err
-	case schemapb.DataType_GeoSpatial:
-		val, validData, err := r.GetGeospatialFromPayload()
+	case schemapb.DataType_Geometry:
+		val, validData, err := r.GetGeometryFromPayload()
 		return val, validData, 0, err
 	default:
 		return nil, nil, 0, merr.WrapErrParameterInvalidMsg("unknown type")
@@ -435,9 +435,9 @@ func (r *PayloadReader) GetJSONFromPayload() ([][]byte, []bool, error) {
 	return value, nil, nil
 }
 
-func (r *PayloadReader) GetGeospatialFromPayload() ([][]byte, []bool, error) {
-	if r.colType != schemapb.DataType_GeoSpatial {
-		return nil, nil, merr.WrapErrParameterInvalidMsg(fmt.Sprintf("failed to get geospatial from datatype %v", r.colType.String()))
+func (r *PayloadReader) GetGeometryFromPayload() ([][]byte, []bool, error) {
+	if r.colType != schemapb.DataType_Geometry {
+		return nil, nil, merr.WrapErrParameterInvalidMsg(fmt.Sprintf("failed to get Geometry from datatype %v", r.colType.String()))
 	}
 
 	if r.nullable {

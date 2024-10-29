@@ -21,7 +21,7 @@
 #include "common/Consts.h"
 #include "common/EasyAssert.h"
 #include "common/FieldMeta.h"
-#include "common/GeoSpatial.h"
+#include "common/Geometry.h"
 #include "common/Json.h"
 #include "fmt/format.h"
 #include "nlohmann/json.hpp"
@@ -283,7 +283,7 @@ BaseEventData::Serialize() {
             }
             break;
         }
-        case DataType::GEOSPATIAL: {
+        case DataType::GEOMETRY: {
             for (size_t offset = 0; offset < field_data->get_num_rows();
                  ++offset) {
                 auto geo_ptr = static_cast<const std::string*>(

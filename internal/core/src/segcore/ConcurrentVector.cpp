@@ -98,14 +98,14 @@ VectorBase::set_data_raw(ssize_t element_offset,
 
             return set_data_raw(element_offset, data_raw.data(), element_count);
         }
-        case DataType::GEOSPATIAL: {
-            // get the geospatial array of a column from proto message
-            auto& geospatial_data = FIELD_DATA(data, geospatial);
+        case DataType::GEOMETRY: {
+            // get the geometry array of a column from proto message
+            auto& geometry_data = FIELD_DATA(data, geometry);
             std::vector<std::string> data_raw{};
-            data_raw.reserve(geospatial_data.size());
-            for (auto& geospatial_bytes : geospatial_data) {
-                //this geospatial_bytes consider as wkt strings from milvus-proto
-                data_raw.emplace_back(std::string(geospatial_bytes));
+            data_raw.reserve(geometry_data.size());
+            for (auto& geometry_bytes : geometry_data) {
+                //this geometry_bytes consider as wkt strings from milvus-proto
+                data_raw.emplace_back(std::string(geometry_bytes));
             }
             return set_data_raw(element_offset, data_raw.data(), element_count);
         }

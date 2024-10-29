@@ -55,10 +55,10 @@ func withMaxCapCheck() validateOption {
 	}
 }
 
-func validateGeospatialFieldSearchResult(array *[]*schemapb.FieldData) error {
+func validateGeometryFieldSearchResult(array *[]*schemapb.FieldData) error {
 	for idx, fieldData := range *array {
-		if fieldData.Type == schemapb.DataType_GeoSpatial {
-			wkbArray := fieldData.GetScalars().GetGeospatialData().Data
+		if fieldData.Type == schemapb.DataType_Geometry {
+			wkbArray := fieldData.GetScalars().GetGeometryData().Data
 			wktArray := make([][]byte, len(wkbArray))
 			for i, data := range wkbArray {
 				geomT, err := wkb.Unmarshal(data)
@@ -80,7 +80,7 @@ func validateGeospatialFieldSearchResult(array *[]*schemapb.FieldData) error {
 				FieldName: fieldData.GetFieldName(),
 				Field: &schemapb.FieldData_Scalars{
 					Scalars: &schemapb.ScalarField{
-						Data: &schemapb.ScalarField_GeospatialData{GeospatialData: &schemapb.GeoSpatialArray{Data: wktArray}},
+						Data: &schemapb.ScalarField_GeometryData{GeometryData: &schemapb.GeometryArray{Data: wktArray}},
 					},
 				},
 				FieldId:   fieldData.GetFieldId(),
@@ -133,8 +133,8 @@ func (v *validateUtil) Validate(data []*schemapb.FieldData, helper *typeutil.Sch
 			if err := v.checkVarCharFieldData(field, fieldSchema); err != nil {
 				return err
 			}
-		case schemapb.DataType_GeoSpatial:
-			if err := v.checkGeospatialFieldData(field, fieldSchema); err != nil {
+		case schemapb.DataType_Geometry:
+			if err := v.checkGeometryFieldData(field, fieldSchema); err != nil {
 				return err
 			}
 		case schemapb.DataType_JSON:
@@ -413,9 +413,9 @@ func (v *validateUtil) fillWithNullValue(field *schemapb.FieldData, fieldSchema 
 				}
 			}
 
-		case *schemapb.ScalarField_GeospatialData:
+		case *schemapb.ScalarField_GeometryData:
 			if fieldSchema.GetNullable() {
-				sd.GeospatialData.Data, err = fillWithNullValueImpl(sd.GeospatialData.Data, field.GetValidData())
+				sd.GeometryData.Data, err = fillWithNullValueImpl(sd.GeometryData.Data, field.GetValidData())
 				if err != nil {
 					return err
 				}
@@ -519,13 +519,13 @@ func (v *validateUtil) fillWithDefaultValue(field *schemapb.FieldData, fieldSche
 				return err
 			}
 
-		case *schemapb.ScalarField_GeospatialData:
+		case *schemapb.ScalarField_GeometryData:
 			if len(field.GetValidData()) != numRows {
 				msg := fmt.Sprintf("the length of valid_data of field(%s) is wrong", field.GetFieldName())
 				return merr.WrapErrParameterInvalid(numRows, len(field.GetValidData()), msg)
 			}
 			defaultValue := fieldSchema.GetDefaultValue().GetBytesData()
-			sd.GeospatialData.Data, err = fillWithDefaultValueImpl(sd.GeospatialData.Data, defaultValue, field.GetValidData())
+			sd.GeometryData.Data, err = fillWithDefaultValueImpl(sd.GeometryData.Data, defaultValue, field.GetValidData())
 			if err != nil {
 				return err
 			}
@@ -699,24 +699,24 @@ func (v *validateUtil) checkVarCharFieldData(field *schemapb.FieldData, fieldSch
 	return nil
 }
 
-func (v *validateUtil) checkGeospatialFieldData(field *schemapb.FieldData, fieldSchema *schemapb.FieldSchema) error {
-	geospatialArray := field.GetScalars().GetGeospatialData().GetData()
-	if geospatialArray == nil {
-		msg := fmt.Sprintf("geospatial field '%v' is illegal, array type mismatch", field.GetFieldName())
-		return merr.WrapErrParameterInvalid("need geospatial array", "got nil", msg)
+func (v *validateUtil) checkGeometryFieldData(field *schemapb.FieldData, fieldSchema *schemapb.FieldSchema) error {
+	geometryArray := field.GetScalars().GetGeometryData().GetData()
+	if geometryArray == nil {
+		msg := fmt.Sprintf("geometry field '%v' is illegal, array type mismatch", field.GetFieldName())
+		return merr.WrapErrParameterInvalid("need geometry array", "got nil", msg)
 	}
 
-	for index, wktdata := range geospatialArray {
+	for index, wktdata := range geometryArray {
 		// ignore parsed geom, the check is during insert task pre execute,so geo data became wkb
 		// fmt.Println(strings.Trim(string(wktdata), "\""))
 		geomT, err := wkt.Unmarshal(strings.Trim(string(wktdata), "\""))
 		if err != nil {
-			log.Warn("insert invalid Geospatial data!! The wkt data has errors", zap.Error(err))
+			log.Warn("insert invalid Geometry data!! The wkt data has errors", zap.Error(err))
 			return merr.WrapErrIoFailedReason(err.Error())
 		}
-		geospatialArray[index], err = wkb.Marshal(geomT, wkb.NDR)
+		geometryArray[index], err = wkb.Marshal(geomT, wkb.NDR)
 		if err != nil {
-			log.Warn("insert invalid Geospatial data!! Transform to wkb failed, has errors", zap.Error(err))
+			log.Warn("insert invalid Geometry data!! Transform to wkb failed, has errors", zap.Error(err))
 			return merr.WrapErrIoFailedReason(err.Error())
 		}
 	}
@@ -726,7 +726,7 @@ func (v *validateUtil) checkGeospatialFieldData(field *schemapb.FieldData, field
 		FieldName: field.GetFieldName(),
 		Field: &schemapb.FieldData_Scalars{
 			Scalars: &schemapb.ScalarField{
-				Data: &schemapb.ScalarField_GeospatialData{GeospatialData: &schemapb.GeoSpatialArray{Data: geospatialArray}},
+				Data: &schemapb.ScalarField_GeometryData{GeometryData: &schemapb.GeometryArray{Data: geometryArray}},
 			},
 		},
 		FieldId:   field.GetFieldId(),

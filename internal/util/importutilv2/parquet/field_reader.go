@@ -150,11 +150,11 @@ func (c *FieldReader) Next(count int64) (any, any, error) {
 		}
 		data, err := ReadJSONData(c, count)
 		return data, nil, err
-	case schemapb.DataType_GeoSpatial:
+	case schemapb.DataType_Geometry:
 		if c.field.GetNullable() {
-			return ReadNullableGeospatialData(c, count)
+			return ReadNullableGeometryData(c, count)
 		}
-		data, err := ReadGeospatialData(c, count)
+		data, err := ReadGeometryData(c, count)
 		return data, nil, err
 	case schemapb.DataType_BinaryVector, schemapb.DataType_Float16Vector, schemapb.DataType_BFloat16Vector:
 		// vector not support default_value
@@ -626,8 +626,8 @@ func ReadNullableJSONData(pcr *FieldReader, count int64) (any, []bool, error) {
 	return byteArr, validData, nil
 }
 
-func ReadNullableGeospatialData(pcr *FieldReader, count int64) (any, []bool, error) {
-	// geospatial field read data from string array Parquet
+func ReadNullableGeometryData(pcr *FieldReader, count int64) (any, []bool, error) {
+	// Geometry field read data from string array Parquet
 	data, validData, err := ReadNullableStringData(pcr, count)
 	if err != nil {
 		return nil, nil, err
@@ -646,8 +646,8 @@ func ReadNullableGeospatialData(pcr *FieldReader, count int64) (any, []bool, err
 	return byteArr, validData, nil
 }
 
-func ReadGeospatialData(pcr *FieldReader, count int64) (any, error) {
-	// Geospatial field read data from string array Parquet
+func ReadGeometryData(pcr *FieldReader, count int64) (any, error) {
+	// Geometry field read data from string array Parquet
 	data, err := ReadStringData(pcr, count)
 	if err != nil {
 		return nil, err

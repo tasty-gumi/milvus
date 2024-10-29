@@ -45,7 +45,7 @@
 #include "pb/schema.pb.h"
 #include "pb/segcore.pb.h"
 #include "Json.h"
-#include "GeoSpatial.h"
+#include "Geometry.h"
 
 #include "CustomBitset.h"
 
@@ -76,7 +76,7 @@ enum class DataType {
     VARCHAR = 21,
     ARRAY = 22,
     JSON = 23,
-    GEOSPATIAL = 24,
+    GEOMETRY = 24,
 
     // Some special Data type, start from after 50
     // just for internal use now, may sync proto in future
@@ -182,8 +182,8 @@ GetDataTypeName(DataType data_type) {
             return "array";
         case DataType::JSON:
             return "json";
-        case DataType::GEOSPATIAL:
-            return "geospatial";
+        case DataType::GEOMETRY:
+            return "geometry";
         case DataType::VECTOR_FLOAT:
             return "vector_float";
         case DataType::VECTOR_BINARY:
@@ -267,8 +267,8 @@ IsJsonDataType(DataType data_type) {
 }
 
 inline bool
-IsGeoSpatialDataType(DataType data_type) {
-    return data_type == DataType::GEOSPATIAL;
+IsGeometryDataType(DataType data_type) {
+    return data_type == DataType::GEOMETRY;
 }
 
 inline bool
@@ -279,7 +279,7 @@ IsArrayDataType(DataType data_type) {
 inline bool
 IsBinaryDataType(DataType data_type) {
     return IsJsonDataType(data_type) || IsArrayDataType(data_type) ||
-           IsGeoSpatialDataType(data_type);
+           IsGeometryDataType(data_type);
 }
 
 inline bool
@@ -306,8 +306,8 @@ IsJsonType(proto::schema::DataType type) {
 }
 
 inline bool
-IsGeoSpatialType(proto::schema::DataType type) {
-    return type == proto::schema::DataType::GeoSpatial;
+IsGeometryType(proto::schema::DataType type) {
+    return type == proto::schema::DataType::Geometry;
 }
 
 inline bool
@@ -553,12 +553,12 @@ struct TypeTraits<DataType::JSON> {
 };
 
 template <>
-struct TypeTraits<DataType::GEOSPATIAL> {
+struct TypeTraits<DataType::GEOMETRY> {
     using NativeType = void;
-    static constexpr DataType TypeKind = DataType::GEOSPATIAL;
+    static constexpr DataType TypeKind = DataType::GEOMETRY;
     static constexpr bool IsPrimitiveType = false;
     static constexpr bool IsFixedWidth = false;
-    static constexpr const char* Name = "GEOSPATIAL";
+    static constexpr const char* Name = "GEOMETRY";
 };
 
 template <>
@@ -631,8 +631,8 @@ struct fmt::formatter<milvus::DataType> : formatter<string_view> {
             case milvus::DataType::JSON:
                 name = "JSON";
                 break;
-            case milvus::DataType::GEOSPATIAL:
-                name = "GEOSPATIAL";
+            case milvus::DataType::GEOMETRY:
+                name = "GEOMETRY";
                 break;
             case milvus::DataType::ROW:
                 name = "ROW";

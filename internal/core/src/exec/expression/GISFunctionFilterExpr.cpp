@@ -11,40 +11,40 @@
 
 #include "GISFunctionFilterExpr.h"
 #include "common/EasyAssert.h"
-#include "common/GeoSpatial.h"
+#include "common/Geometry.h"
 #include "common/Types.h"
 #include "pb/plan.pb.h"
 namespace milvus {
 namespace exec {
 
-#define GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(method)                \
-    auto execute_sub_batch = [](const std::string_view* data,               \
-                                const bool* valid_data,                     \
-                                const int size,                             \
-                                TargetBitmapView res,                       \
-                                TargetBitmapView valid_res,                 \
-                                const GeoSpatial& right_source) {           \
-        for (int i = 0; i < size; ++i) {                                    \
-            if (valid_data != nullptr && !valid_data[i]) {                  \
-                res[i] = valid_res[i] = false;                              \
-                continue;                                                   \
-            }                                                               \
-            res[i] = GeoSpatial(data[i].data(), data[i].size())             \
-                         .method(right_source);                             \
-        }                                                                   \
-    };                                                                      \
-    int64_t processed_size = ProcessDataChunks<std::string_view>(           \
-        execute_sub_batch, std::nullptr_t{}, res, valid_res, right_source); \
-    AssertInfo(processed_size == real_batch_size,                           \
-               "internal error: expr processed rows {} not equal "          \
-               "expect batch size {}",                                      \
-               processed_size,                                              \
-               real_batch_size);                                            \
+#define GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(method)                     \
+    auto execute_sub_batch = [](const std::string_view* data,                  \
+                                const bool* valid_data,                        \
+                                const int size,                                \
+                                TargetBitmapView res,                          \
+                                TargetBitmapView valid_res,                    \
+                                const Geometry& right_source) {                \
+        for (int i = 0; i < size; ++i) {                                       \
+            if (valid_data != nullptr && !valid_data[i]) {                     \
+                res[i] = valid_res[i] = false;                                 \
+                continue;                                                      \
+            }                                                                  \
+            res[i] =                                                           \
+                Geometry(data[i].data(), data[i].size()).method(right_source); \
+        }                                                                      \
+    };                                                                         \
+    int64_t processed_size = ProcessDataChunks<std::string_view>(              \
+        execute_sub_batch, std::nullptr_t{}, res, valid_res, right_source);    \
+    AssertInfo(processed_size == real_batch_size,                              \
+               "internal error: expr processed rows {} not equal "             \
+               "expect batch size {}",                                         \
+               processed_size,                                                 \
+               real_batch_size);                                               \
     return res_vec;
 
 void
 PhyGISFunctionFilterExpr::Eval(EvalCtx& context, VectorPtr& result) {
-    AssertInfo(expr_->column_.data_type_ == DataType::GEOSPATIAL,
+    AssertInfo(expr_->column_.data_type_ == DataType::GEOMETRY,
                "unsupported data type: {}",
                expr_->column_.data_type_);
     if (is_index_mode_) {
@@ -68,28 +68,28 @@ PhyGISFunctionFilterExpr::EvalForDataSegment() {
     valid_res.set();
 
     auto& str = expr_->wkb_;
-    GeoSpatial right_source(str.data(), str.size());
+    Geometry right_source(str.data(), str.size());
     switch (expr_->op_) {
         case proto::plan::GISFunctionFilterExpr_GISOp_Equals: {
-            GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(equals);
+            GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(equals);
         }
         case proto::plan::GISFunctionFilterExpr_GISOp_Touches: {
-            GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(touches);
+            GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(touches);
         }
         case proto::plan::GISFunctionFilterExpr_GISOp_Overlaps: {
-            GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(overlaps);
+            GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(overlaps);
         }
         case proto::plan::GISFunctionFilterExpr_GISOp_Crosses: {
-            GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(crosses);
+            GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(crosses);
         }
         case proto::plan::GISFunctionFilterExpr_GISOp_Contains: {
-            GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(contains);
+            GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(contains);
         }
         case proto::plan::GISFunctionFilterExpr_GISOp_Intersects: {
-            GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(intersects);
+            GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(intersects);
         }
         case proto::plan::GISFunctionFilterExpr_GISOp_Within: {
-            GEOSPATIAL_EXECUTE_SUB_BATCH_WITH_COMPARISON(within);
+            GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(within);
         }
         default: {
             PanicInfo(NotImplemented,

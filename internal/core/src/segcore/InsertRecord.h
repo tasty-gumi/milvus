@@ -455,7 +455,7 @@ struct InsertRecord {
                     this->append_data<Json>(field_id, size_per_chunk);
                     break;
                 }
-                case DataType::GEOSPATIAL: {
+                case DataType::GEOMETRY: {
                     this->append_data<std::string>(field_id, size_per_chunk);
                     break;
                 }

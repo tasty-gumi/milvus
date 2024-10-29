@@ -573,11 +573,11 @@ class FieldDataStringImpl : public FieldDataImpl<std::string, true> {
     }
 };
 
-class FieldDataGeoSpatialImpl : public FieldDataImpl<std::string, true> {
+class FieldDataGeometryImpl : public FieldDataImpl<std::string, true> {
  public:
-    explicit FieldDataGeoSpatialImpl(DataType data_type,
-                                     bool nullable,
-                                     int64_t total_num_rows = 0)
+    explicit FieldDataGeometryImpl(DataType data_type,
+                                   bool nullable,
+                                   int64_t total_num_rows = 0)
         : FieldDataImpl<std::string, true>(
               1, data_type, nullable, total_num_rows) {
     }
@@ -606,9 +606,9 @@ class FieldDataGeoSpatialImpl : public FieldDataImpl<std::string, true> {
                    "inconsistent data type, expected: {}, got: {}",
                    "BINARY",
                    array->type()->ToString());
-        auto geospatial_array =
+        auto geometry_array =
             std::dynamic_pointer_cast<arrow::BinaryArray>(array);
-        FillFieldData(geospatial_array);
+        FillFieldData(geometry_array);
     }
     void
     FillFieldData(const std::shared_ptr<arrow::BinaryArray>& array) override {
@@ -622,8 +622,8 @@ class FieldDataGeoSpatialImpl : public FieldDataImpl<std::string, true> {
             resize_field_data(length_ + n);
         }
         auto i = 0;
-        for (const auto& geospatial : *array) {
-            data_[length_ + i] = geospatial.value();
+        for (const auto& geometry : *array) {
+            data_[length_ + i] = geometry.value();
             i++;
         }
         length_ += n;

@@ -148,10 +148,10 @@ GetRawDataSizeOfDataArray(const DataArray* data,
                 }
                 break;
             }
-            case DataType::GEOSPATIAL: {
-                auto& geospatial_data = FIELD_DATA(data, geospatial);
-                for (auto& geospatial_bytes : geospatial_data) {
-                    result += geospatial_bytes.size();
+            case DataType::GEOMETRY: {
+                auto& geometry_data = FIELD_DATA(data, geometry);
+                for (auto& geometry_bytes : geometry_data) {
+                    result += geometry_bytes.size();
                 }
                 break;
             }
@@ -301,8 +301,8 @@ CreateScalarDataArray(int64_t count, const FieldMeta& field_meta) {
             }
             break;
         }
-        case DataType::GEOSPATIAL: {
-            auto obj = scalar_array->mutable_geospatial_data();
+        case DataType::GEOMETRY: {
+            auto obj = scalar_array->mutable_geometry_data();
             obj->mutable_data()->Reserve(count);
             for (int i = 0; i < count; i++) {
                 *(obj->mutable_data()->Add()) = std::string();
@@ -457,9 +457,9 @@ CreateScalarDataArrayFrom(const void* data_raw,
             }
             break;
         }
-        case DataType::GEOSPATIAL: {
+        case DataType::GEOMETRY: {
             auto data = reinterpret_cast<const std::string*>(data_raw);
-            auto obj = scalar_array->mutable_geospatial_data();
+            auto obj = scalar_array->mutable_geometry_data();
             for (auto i = 0; i < count; i++) {
                 *(obj->mutable_data()->Add()) = data[i];
             }
@@ -680,9 +680,9 @@ MergeDataArray(std::vector<MergeBase>& merge_bases,
                 *(obj->mutable_data()->Add()) = data[src_offset];
                 break;
             }
-            case DataType::GEOSPATIAL: {
-                auto& data = FIELD_DATA(src_field_data, geospatial);
-                auto obj = scalar_array->mutable_geospatial_data();
+            case DataType::GEOMETRY: {
+                auto& data = FIELD_DATA(src_field_data, geometry);
+                auto obj = scalar_array->mutable_geometry_data();
                 *(obj->mutable_data()->Add()) = data[src_offset];
                 break;
             }

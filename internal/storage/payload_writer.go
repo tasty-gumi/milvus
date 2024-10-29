@@ -206,7 +206,7 @@ func (w *NativePayloadWriter) AddDataToPayload(data interface{}, validData []boo
 			isValid = validData[0]
 		}
 		return w.AddOneJSONToPayload(val, isValid)
-	case schemapb.DataType_GeoSpatial:
+	case schemapb.DataType_Geometry:
 		val, ok := data.([]byte)
 		if !ok {
 			return merr.WrapErrParameterInvalidMsg("incorrect data type")
@@ -224,7 +224,7 @@ func (w *NativePayloadWriter) AddDataToPayload(data interface{}, validData []boo
 			}
 			isValid = validData[0]
 		}
-		return w.AddOneGeospatialToPayload(val, isValid)
+		return w.AddOneGeometryToPayload(val, isValid)
 	case schemapb.DataType_BinaryVector:
 		val, ok := data.([]byte)
 		if !ok {
@@ -565,9 +565,9 @@ func (w *NativePayloadWriter) AddOneJSONToPayload(data []byte, isValid bool) err
 	return nil
 }
 
-func (w *NativePayloadWriter) AddOneGeospatialToPayload(data []byte, isValid bool) error {
+func (w *NativePayloadWriter) AddOneGeometryToPayload(data []byte, isValid bool) error {
 	if w.finished {
-		return errors.New("can't append data to finished geospatial payload")
+		return errors.New("can't append data to finished geometry payload")
 	}
 
 	if !w.nullable && !isValid {
@@ -576,7 +576,7 @@ func (w *NativePayloadWriter) AddOneGeospatialToPayload(data []byte, isValid boo
 
 	builder, ok := w.builder.(*array.BinaryBuilder)
 	if !ok {
-		return errors.New("failed to cast geospatialBuilder")
+		return errors.New("failed to cast geometryBuilder")
 	}
 
 	if !isValid {
@@ -794,7 +794,7 @@ func milvusDataTypeToArrowType(dataType schemapb.DataType, dim int) arrow.DataTy
 		return &arrow.BinaryType{}
 	case schemapb.DataType_JSON:
 		return &arrow.BinaryType{}
-	case schemapb.DataType_GeoSpatial:
+	case schemapb.DataType_Geometry:
 		return &arrow.BinaryType{}
 	case schemapb.DataType_FloatVector:
 		return &arrow.FixedSizeBinaryType{

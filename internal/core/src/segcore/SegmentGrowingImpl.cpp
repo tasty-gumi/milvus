@@ -608,12 +608,12 @@ SegmentGrowingImpl::bulk_subscript(FieldId field_id,
                 result->mutable_scalars()->mutable_json_data()->mutable_data());
             break;
         }
-        case DataType::GEOSPATIAL: {
+        case DataType::GEOMETRY: {
             bulk_subscript_ptr_impl<std::string>(vec_ptr,
                                                  seg_offsets,
                                                  count,
                                                  result->mutable_scalars()
-                                                     ->mutable_geospatial_data()
+                                                     ->mutable_geometry_data()
                                                      ->mutable_data());
             break;
         }

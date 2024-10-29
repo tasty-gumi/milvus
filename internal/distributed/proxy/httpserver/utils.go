@@ -495,7 +495,7 @@ func checkAndSetData(body string, collSchema *schemapb.CollectionSchema) (error,
 					}
 				case schemapb.DataType_JSON:
 					reallyData[fieldName] = []byte(dataString)
-				case schemapb.DataType_GeoSpatial:
+				case schemapb.DataType_Geometry:
 					// treat as string(wkt) data,the string data must be valid
 					WktString, err := base64.StdEncoding.DecodeString(dataString)
 					if err != nil {
@@ -717,7 +717,7 @@ func anyToColumns(rows []map[string]interface{}, validDataMap map[string][]bool,
 			data = make([]*schemapb.ScalarField, 0, rowsLen)
 		case schemapb.DataType_JSON:
 			data = make([][]byte, 0, rowsLen)
-		case schemapb.DataType_GeoSpatial:
+		case schemapb.DataType_Geometry:
 			data = make([][]byte, 0, rowsLen)
 		case schemapb.DataType_FloatVector:
 			data = make([][]float32, 0, rowsLen)
@@ -805,7 +805,7 @@ func anyToColumns(rows []map[string]interface{}, validDataMap map[string][]bool,
 				nameColumns[field.Name] = append(nameColumns[field.Name].([]*schemapb.ScalarField), candi.v.Interface().(*schemapb.ScalarField))
 			case schemapb.DataType_JSON:
 				nameColumns[field.Name] = append(nameColumns[field.Name].([][]byte), candi.v.Interface().([]byte))
-			case schemapb.DataType_GeoSpatial:
+			case schemapb.DataType_Geometry:
 				nameColumns[field.Name] = append(nameColumns[field.Name].([][]byte), candi.v.Interface().([]byte))
 			case schemapb.DataType_FloatVector:
 				nameColumns[field.Name] = append(nameColumns[field.Name].([][]float32), candi.v.Interface().([]float32))
@@ -955,11 +955,11 @@ func anyToColumns(rows []map[string]interface{}, validDataMap map[string][]bool,
 					},
 				},
 			}
-		case schemapb.DataType_GeoSpatial:
+		case schemapb.DataType_Geometry:
 			colData.Field = &schemapb.FieldData_Scalars{
 				Scalars: &schemapb.ScalarField{
-					Data: &schemapb.ScalarField_GeospatialData{
-						GeospatialData: &schemapb.GeoSpatialArray{
+					Data: &schemapb.ScalarField_GeometryData{
+						GeometryData: &schemapb.GeometryArray{
 							Data: column.([][]byte),
 						},
 					},
@@ -1225,8 +1225,8 @@ func buildQueryResp(rowsNum int64, needFields []string, fieldDataList []*schemap
 				rowsNum = int64(len(fieldDataList[0].GetScalars().GetArrayData().Data))
 			case schemapb.DataType_JSON:
 				rowsNum = int64(len(fieldDataList[0].GetScalars().GetJsonData().Data))
-			case schemapb.DataType_GeoSpatial:
-				rowsNum = int64(len(fieldDataList[0].GetScalars().GetGeospatialData().Data))
+			case schemapb.DataType_Geometry:
+				rowsNum = int64(len(fieldDataList[0].GetScalars().GetGeometryData().Data))
 			case schemapb.DataType_BinaryVector:
 				rowsNum = int64(len(fieldDataList[0].GetVectors().GetBinaryVector())*8) / fieldDataList[0].GetVectors().GetDim()
 			case schemapb.DataType_FloatVector:
@@ -1365,8 +1365,8 @@ func buildQueryResp(rowsNum int64, needFields []string, fieldDataList []*schemap
 							}
 						}
 					}
-				case schemapb.DataType_GeoSpatial:
-					row[fieldDataList[j].FieldName] = fieldDataList[j].GetScalars().GetGeospatialData().Data[i]
+				case schemapb.DataType_Geometry:
+					row[fieldDataList[j].FieldName] = fieldDataList[j].GetScalars().GetGeometryData().Data[i]
 				default:
 					row[fieldDataList[j].FieldName] = ""
 				}
