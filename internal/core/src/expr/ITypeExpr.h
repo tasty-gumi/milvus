@@ -711,23 +711,22 @@ class GISFunctioinFilterExpr : public ITypeFilterExpr {
  public:
     GISFunctioinFilterExpr(ColumnInfo cloumn,
                            GISFunctionType op,
-                           const std::string wkb)
-        : column_(cloumn), op_(op), wkb_(wkb){};
+                           const Geometry& geometry)
+        : column_(cloumn), op_(op), geometry_(geometry){};
     std::string
     ToString() const override {
-        Geometry geo(wkb_.data(), wkb_.size());
         return fmt::format(
             "GISFunctioinFilterExpr:[Column: {}, Operator: {} "
             "WktValue: {}]",
             column_.ToString(),
             GISFunctionFilterExpr_GISOp_Name(op_),
-            geo.to_wkt_string());
+            geometry_.to_wkt_string());
     }
 
  public:
     const ColumnInfo column_;
-    GISFunctionType op_;
-    const std::string wkb_;
+    const GISFunctionType op_;
+    const Geometry geometry_;
 };
 
 class JsonContainsExpr : public ITypeFilterExpr {

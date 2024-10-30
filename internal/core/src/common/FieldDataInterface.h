@@ -616,6 +616,7 @@ class FieldDataGeometryImpl : public FieldDataImpl<std::string, true> {
         if (n == 0) {
             return;
         }
+        null_count_ = array->null_count();
 
         std::lock_guard lck(tell_mutex_);
         if (length_ + n > get_num_rows()) {
@@ -623,6 +624,10 @@ class FieldDataGeometryImpl : public FieldDataImpl<std::string, true> {
         }
         auto i = 0;
         for (const auto& geometry : *array) {
+            if (!geometry.has_value()) {
+                i++;
+                continue;
+            }
             data_[length_ + i] = geometry.value();
             i++;
         }

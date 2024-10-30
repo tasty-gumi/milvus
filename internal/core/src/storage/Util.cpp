@@ -359,7 +359,8 @@ CreateArrowSchema(DataType data_type, bool nullable) {
         case DataType::ARRAY:
         case DataType::JSON:
         case DataType::GEOMETRY: {
-            return arrow::schema({arrow::field("val", arrow::binary())});
+            return arrow::schema(
+                {arrow::field("val", arrow::binary(), nullable)});
         }
         // sparse float vector doesn't require a dim
         case DataType::VECTOR_SPARSE_FLOAT: {

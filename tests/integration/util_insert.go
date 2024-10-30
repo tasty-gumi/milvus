@@ -135,8 +135,8 @@ func NewStringFieldData(fieldName string, numRows int) *schemapb.FieldData {
 	return testutils.NewStringFieldData(fieldName, numRows)
 }
 
-func NewGeospatialFieldData(fieldName string, numRows int) *schemapb.FieldData {
-	return testutils.NewGeospatialFieldDataWktFormat(fieldName, numRows)
+func NewGeometryFieldData(fieldName string, numRows int) *schemapb.FieldData {
+	return testutils.NewGeometryFieldDataWktFormat(fieldName, numRows)
 }
 
 func NewFloatVectorFieldData(fieldName string, numRows, dim int) *schemapb.FieldData {

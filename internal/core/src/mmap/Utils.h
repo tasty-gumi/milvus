@@ -141,17 +141,17 @@ WriteFieldData(File& file,
                 // write as: |size|data|size|data......
                 for (ssize_t i = 0; i < data->get_num_rows(); ++i) {
                     indices.push_back(total_written);
-                    auto Geo_ptr =
+                    auto geo_ptr =
                         static_cast<const std::string*>(data->RawValue(i));
                     ssize_t written_data_size =
-                        file.WriteInt<uint32_t>(Geo_ptr->size());
+                        file.WriteInt<uint32_t>(geo_ptr->size());
                     if (written_data_size != sizeof(uint32_t)) {
                         THROW_FILE_WRITE_ERROR
                     }
                     total_written += written_data_size;
                     ssize_t written_data =
-                        file.Write(Geo_ptr->data(), Geo_ptr->size());
-                    if (written_data < Geo_ptr->size()) {
+                        file.Write(geo_ptr->data(), geo_ptr->size());
+                    if (written_data < geo_ptr->size()) {
                         THROW_FILE_WRITE_ERROR
                     }
                     total_written += written_data;

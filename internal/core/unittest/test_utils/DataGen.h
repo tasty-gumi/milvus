@@ -207,12 +207,11 @@ struct GeneratedData {
                         std::copy(src_data.begin(), src_data.end(), ret_data);
                         break;
                     }
-                    case DataType::GEOSPATIAL: {
+                    case DataType::GEOMETRY: {
                         auto ret_data =
                             reinterpret_cast<std::string*>(ret.data());
-                        auto src_data = target_field_data.scalars()
-                                            .geospatial_data()
-                                            .data();
+                        auto src_data =
+                            target_field_data.scalars().geometry_data().data();
                         std::copy(src_data.begin(), src_data.end(), ret_data);
                         break;
                     }
@@ -606,7 +605,7 @@ DataGen(SchemaPtr schema,
                 insert_cols(data, N, field_meta);
                 break;
             }
-            case DataType::GEOSPATIAL: {
+            case DataType::GEOMETRY: {
                 vector<std::string> data(N);
                 for (int i = 0; i < N / repeat_count; i++) {
                     OGRGeometry* geo = GenRandomGeometry();
@@ -1261,14 +1260,14 @@ CreateFieldDataFromDataArray(ssize_t raw_count,
                 }
                 break;
             }
-            case DataType::GEOSPATIAL: {
-                auto src_data = data->scalars().geospatial_data().data();
+            case DataType::GEOMETRY: {
+                auto src_data = data->scalars().geometry_data().data();
                 std::vector<std::string> data_raw(src_data.size());
                 for (int i = 0; i < src_data.size(); i++) {
                     auto str = src_data.Get(i);
                     data_raw[i] = std::move(std::string(str));
                 }
-                createFieldData(data_raw.data(), DataType::GEOSPATIAL, dim);
+                createFieldData(data_raw.data(), DataType::GEOMETRY, dim);
                 break;
             }
             case DataType::ARRAY: {

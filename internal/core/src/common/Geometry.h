@@ -34,6 +34,15 @@ class Geometry {
         to_wkb_internal();
     }
 
+    explicit Geometry(const char* wkt) {
+        OGRGeometry* geometry = nullptr;
+        OGRGeometryFactory::createFromWkt(wkt, nullptr, &geometry);
+        AssertInfo(geometry != nullptr,
+                   "failed to construct geometry from wkt data");
+        geometry_.reset(geometry);
+        to_wkb_internal();
+    }
+
     Geometry(const Geometry& other) {
         if (other.IsValid()) {
             this->geometry_.reset(other.geometry_->clone());
@@ -76,11 +85,7 @@ class Geometry {
                                 size_);
     }
 
-    ~Geometry() {
-        if (geometry_) {
-            OGRGeometryFactory::destroyGeometry(geometry_.get());
-        }
-    }
+    ~Geometry() = default;
 
     bool
     IsValid() const {
@@ -143,6 +148,11 @@ class Geometry {
         return geometry_->exportToWkt();
     }
 
+    std::string
+    to_wkb_string() const {
+        return std::string(reinterpret_cast<char*>(wkb_data_.get()), size_);
+    }
+
  private:
     inline void
     to_wkb_internal() {
@@ -154,10 +164,9 @@ class Geometry {
         }
     }
 
-    //read write ptr, use to save a OGRGeometry object when need to create new storage file
-    std::unique_ptr<unsigned char[]> wkb_data_{nullptr};
+    std::unique_ptr<unsigned char[]> wkb_data_;
     size_t size_{0};
-    std::unique_ptr<OGRGeometry> geometry_{nullptr};
+    std::unique_ptr<OGRGeometry> geometry_;
 };
 
 }  // namespace milvus

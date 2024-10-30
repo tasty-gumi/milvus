@@ -67,8 +67,7 @@ PhyGISFunctionFilterExpr::EvalForDataSegment() {
     TargetBitmapView valid_res(res_vec->GetValidRawData(), real_batch_size);
     valid_res.set();
 
-    auto& str = expr_->wkb_;
-    Geometry right_source(str.data(), str.size());
+    auto& right_source = expr_->geometry_;
     switch (expr_->op_) {
         case proto::plan::GISFunctionFilterExpr_GISOp_Equals: {
             GEOMETRY_EXECUTE_SUB_BATCH_WITH_COMPARISON(equals);

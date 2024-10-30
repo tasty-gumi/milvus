@@ -333,7 +333,7 @@ TEST(storage, InsertDataInt64Nullable) {
     ASSERT_EQ(*new_payload->ValidData(), *valid_data);
     delete[] valid_data;
 }
-TEST(storage, InsertDataGeospatial) {
+TEST(storage, InsertDataGeometry) {
     OGRPoint point1(10.25, 0.55), point2(9.75, -0.23), point3(-8.50, 1.44);
     OGRLineString linstring;
     linstring.addPoint(&point1);
@@ -361,7 +361,7 @@ TEST(storage, InsertDataGeospatial) {
         std::string(reinterpret_cast<const char*>(s3), polygon.WkbSize()));
     FixedVector<std::string> data = {str1, str2, str3};
     auto field_data =
-        milvus::storage::CreateFieldData(storage::DataType::GEOSPATIAL, false);
+        milvus::storage::CreateFieldData(storage::DataType::GEOMETRY, false);
     field_data->FillFieldData(data.data(), data.size());
 
     storage::InsertData insert_data(field_data);
@@ -378,7 +378,7 @@ TEST(storage, InsertDataGeospatial) {
     ASSERT_EQ(new_insert_data->GetTimeRage(),
               std::make_pair(Timestamp(0), Timestamp(100)));
     auto new_payload = new_insert_data->GetFieldData();
-    ASSERT_EQ(new_payload->get_data_type(), storage::DataType::GEOSPATIAL);
+    ASSERT_EQ(new_payload->get_data_type(), storage::DataType::GEOMETRY);
     ASSERT_EQ(new_payload->get_num_rows(), data.size());
     FixedVector<std::string> new_data(data.size());
     ASSERT_EQ(new_payload->get_null_count(), 0);

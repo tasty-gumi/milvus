@@ -212,10 +212,10 @@ func TestPrintBinlogFiles(t *testing.T) {
 				},
 				{
 					FieldID:      113,
-					Name:         "field_geospatial",
+					Name:         "field_geometry",
 					IsPrimaryKey: false,
 					Description:  "description_15",
-					DataType:     schemapb.DataType_GeoSpatial,
+					DataType:     schemapb.DataType_Geometry,
 				},
 			},
 		},
@@ -275,7 +275,7 @@ func TestPrintBinlogFiles(t *testing.T) {
 				Data: []byte("12345678"),
 				Dim:  4,
 			},
-			113: &GeospatialFieldData{
+			113: &GeometryFieldData{
 				Data: [][]byte{
 					// POINT (30.123 -10.456) and LINESTRING (30.123 -10.456, 10.789 30.123, -40.567 40.890)
 					{0x01, 0x01, 0x00, 0x00, 0x00, 0xD2, 0x4A, 0x4D, 0x6A, 0x8B, 0x3C, 0x5C, 0x0A, 0x0D, 0x1B, 0x4F, 0x4F, 0x9A, 0x3D, 0x40},
@@ -339,7 +339,7 @@ func TestPrintBinlogFiles(t *testing.T) {
 				Data: []byte("abcdefgh"),
 				Dim:  4,
 			},
-			113: &GeospatialFieldData{
+			113: &GeometryFieldData{
 				Data: [][]byte{
 					// POINT (30.123 -10.456) and LINESTRING (30.123 -10.456, 10.789 30.123, -40.567 40.890)
 					{0x01, 0x01, 0x00, 0x00, 0x00, 0xD2, 0x4A, 0x4D, 0x6A, 0x8B, 0x3C, 0x5C, 0x0A, 0x0D, 0x1B, 0x4F, 0x4F, 0x9A, 0x3D, 0x40},

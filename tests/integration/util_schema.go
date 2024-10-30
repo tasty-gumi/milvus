@@ -34,7 +34,7 @@ const (
 	DoubleField         = "doubleField"
 	VarCharField        = "varCharField"
 	JSONField           = "jsonField"
-	GeoSpatialField     = "geospatialField"
+	GeometryField       = "geometryField"
 	FloatVecField       = "floatVecField"
 	BinVecField         = "binVecField"
 	Float16VecField     = "float16VecField"
@@ -112,8 +112,8 @@ func ConstructSchemaOfVecDataType(collection string, dim int, autoID bool, dataT
 		case schemapb.DataType_SparseFloatVector:
 			name = SparseFloatVecField
 			typeParams = nil
-		case schemapb.DataType_GeoSpatial:
-			name = GeoSpatialField
+		case schemapb.DataType_Geometry:
+			name = GeometryField
 			typeParams = nil
 		default:
 			panic("unsupported data type")

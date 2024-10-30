@@ -214,7 +214,7 @@ FieldDataImpl<Type, is_type_entire_row>::FillFieldData(
         }
         case DataType::GEOMETRY: {
             auto array_info =
-                GetDataInfoFromArray<arrow::BinaryArray,
+                GetDataInfoFromArray<arrow::BinaryViewArray,
                                      arrow::Type::type::BINARY>(array);
             auto geometry_array =
                 std::dynamic_pointer_cast<arrow::BinaryArray>(array);

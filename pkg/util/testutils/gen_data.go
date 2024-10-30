@@ -151,7 +151,7 @@ func GenerateJSONArray(numRows int) [][]byte {
 	return ret
 }
 
-func GenerateGeospatialArray(numRows int) [][]byte {
+func GenerateGeometryArray(numRows int) [][]byte {
 	ret := make([][]byte, 0, numRows)
 	const (
 		point           = "POINT (30.123 -10.456)"
@@ -177,7 +177,7 @@ func GenerateGeospatialArray(numRows int) [][]byte {
 	return ret
 }
 
-func GenerateGeospatialWktArray(numRows int) [][]byte {
+func GenerateGeometryWktArray(numRows int) [][]byte {
 	ret := make([][]byte, 0, numRows)
 	const (
 		point           = "POINT (30.123 -10.456)"
@@ -766,15 +766,15 @@ func NewArrayFieldDataWithValue(fieldName string, fieldValue interface{}) *schem
 	}
 }
 
-func NewGeospatialFieldData(fieldName string, numRows int) *schemapb.FieldData {
+func NewGeometryFieldData(fieldName string, numRows int) *schemapb.FieldData {
 	return &schemapb.FieldData{
-		Type:      schemapb.DataType_GeoSpatial,
+		Type:      schemapb.DataType_Geometry,
 		FieldName: fieldName,
 		Field: &schemapb.FieldData_Scalars{
 			Scalars: &schemapb.ScalarField{
-				Data: &schemapb.ScalarField_GeospatialData{
-					GeospatialData: &schemapb.GeoSpatialArray{
-						Data: GenerateGeospatialArray(numRows),
+				Data: &schemapb.ScalarField_GeometryData{
+					GeometryData: &schemapb.GeometryArray{
+						Data: GenerateGeometryArray(numRows),
 					},
 				},
 			},
@@ -782,15 +782,15 @@ func NewGeospatialFieldData(fieldName string, numRows int) *schemapb.FieldData {
 	}
 }
 
-func NewGeospatialFieldDataWktFormat(fieldName string, numRows int) *schemapb.FieldData {
+func NewGeometryFieldDataWktFormat(fieldName string, numRows int) *schemapb.FieldData {
 	return &schemapb.FieldData{
-		Type:      schemapb.DataType_GeoSpatial,
+		Type:      schemapb.DataType_Geometry,
 		FieldName: fieldName,
 		Field: &schemapb.FieldData_Scalars{
 			Scalars: &schemapb.ScalarField{
-				Data: &schemapb.ScalarField_GeospatialData{
-					GeospatialData: &schemapb.GeoSpatialArray{
-						Data: GenerateGeospatialWktArray(numRows),
+				Data: &schemapb.ScalarField_GeometryData{
+					GeometryData: &schemapb.GeometryArray{
+						Data: GenerateGeometryWktArray(numRows),
 					},
 				},
 			},
@@ -798,14 +798,14 @@ func NewGeospatialFieldDataWktFormat(fieldName string, numRows int) *schemapb.Fi
 	}
 }
 
-func NewGeospatialFieldDataWithValue(fieldName string, fieldValue interface{}) *schemapb.FieldData {
+func NewGeometryFieldDataWithValue(fieldName string, fieldValue interface{}) *schemapb.FieldData {
 	return &schemapb.FieldData{
-		Type:      schemapb.DataType_GeoSpatial,
+		Type:      schemapb.DataType_Geometry,
 		FieldName: fieldName,
 		Field: &schemapb.FieldData_Scalars{
 			Scalars: &schemapb.ScalarField{
-				Data: &schemapb.ScalarField_GeospatialData{
-					GeospatialData: &schemapb.GeoSpatialArray{
+				Data: &schemapb.ScalarField_GeometryData{
+					GeometryData: &schemapb.GeometryArray{
 						Data: fieldValue.([][]byte),
 					},
 				},
@@ -981,8 +981,8 @@ func GenerateScalarFieldData(dType schemapb.DataType, fieldName string, numRows 
 		return NewArrayFieldData(fieldName, numRows)
 	case schemapb.DataType_JSON:
 		return NewJSONFieldData(fieldName, numRows)
-	case schemapb.DataType_GeoSpatial:
-		return NewGeospatialFieldData(fieldName, numRows)
+	case schemapb.DataType_Geometry:
+		return NewGeometryFieldData(fieldName, numRows)
 	default:
 		panic("unsupported data type")
 	}
@@ -1013,8 +1013,8 @@ func GenerateScalarFieldDataWithValue(dType schemapb.DataType, fieldName string,
 		fieldData = NewArrayFieldDataWithValue(fieldName, fieldValue)
 	case schemapb.DataType_JSON:
 		fieldData = NewJSONFieldDataWithValue(fieldName, fieldValue)
-	case schemapb.DataType_GeoSpatial:
-		fieldData = NewGeospatialFieldDataWithValue(fieldName, fieldValue)
+	case schemapb.DataType_Geometry:
+		fieldData = NewGeometryFieldDataWithValue(fieldName, fieldValue)
 	default:
 		panic("unsupported data type")
 	}

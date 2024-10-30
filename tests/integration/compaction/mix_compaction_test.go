@@ -52,7 +52,7 @@ func (s *CompactionSuite) TestMixCompaction() {
 		indexType  = integration.IndexFaissIvfFlat
 		metricType = metric.L2
 		vecType    = schemapb.DataType_FloatVector
-		testType   = schemapb.DataType_GeoSpatial
+		testType   = schemapb.DataType_Geometry
 	)
 
 	collectionName := "TestCompaction_" + funcutil.GenRandomStr()
@@ -93,7 +93,7 @@ func (s *CompactionSuite) TestMixCompaction() {
 	for i := 0; i < rowNum/batch; i++ {
 		// insert
 		fVecColumn := integration.NewFloatVectorFieldData(integration.FloatVecField, batch, dim)
-		geoColumn := integration.NewGeospatialFieldData(integration.GeoSpatialField, batch)
+		geoColumn := integration.NewGeometryFieldData(integration.GeometryField, batch)
 		hashKeys := integration.GenerateHashKeys(batch)
 		insertResult, err := c.Proxy.Insert(ctx, &milvuspb.InsertRequest{
 			DbName:         dbName,

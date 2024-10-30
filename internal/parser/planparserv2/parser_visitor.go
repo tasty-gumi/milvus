@@ -1371,7 +1371,7 @@ func (v *ParserVisitor) VisitArrayLength(ctx *parser.ArrayLengthContext) interfa
 	}
 }
 
-func (v *ParserVisitor) VisitGeometryEuqals(ctx *parser.STEuqalsContext) interface{} {
+func (v *ParserVisitor) VisitSTEuqals(ctx *parser.STEuqalsContext) interface{} {
 	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
@@ -1401,7 +1401,7 @@ func (v *ParserVisitor) VisitGeometryEuqals(ctx *parser.STEuqalsContext) interfa
 	}
 }
 
-func (v *ParserVisitor) VisitGeometryTouches(ctx *parser.STTouchesContext) interface{} {
+func (v *ParserVisitor) VisitSTTouches(ctx *parser.STTouchesContext) interface{} {
 	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
@@ -1431,7 +1431,7 @@ func (v *ParserVisitor) VisitGeometryTouches(ctx *parser.STTouchesContext) inter
 	}
 }
 
-func (v *ParserVisitor) VisitGeometryOverlaps(ctx *parser.STOverlapsContext) interface{} {
+func (v *ParserVisitor) VisitSTOverlaps(ctx *parser.STOverlapsContext) interface{} {
 	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
@@ -1462,7 +1462,7 @@ func (v *ParserVisitor) VisitGeometryOverlaps(ctx *parser.STOverlapsContext) int
 	}
 }
 
-func (v *ParserVisitor) VisitGeometryCrosses(ctx *parser.STCrossesContext) interface{} {
+func (v *ParserVisitor) VisitSTCrosses(ctx *parser.STCrossesContext) interface{} {
 	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
@@ -1493,7 +1493,7 @@ func (v *ParserVisitor) VisitGeometryCrosses(ctx *parser.STCrossesContext) inter
 	}
 }
 
-func (v *ParserVisitor) VisitGeometryContains(ctx *parser.STContainsContext) interface{} {
+func (v *ParserVisitor) VisitSTContains(ctx *parser.STContainsContext) interface{} {
 	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
@@ -1524,7 +1524,7 @@ func (v *ParserVisitor) VisitGeometryContains(ctx *parser.STContainsContext) int
 	}
 }
 
-func (v *ParserVisitor) VisitGeometryIntersects(ctx *parser.STIntersectsContext) interface{} {
+func (v *ParserVisitor) VisitSTIntersects(ctx *parser.STIntersectsContext) interface{} {
 	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err
@@ -1555,7 +1555,7 @@ func (v *ParserVisitor) VisitGeometryIntersects(ctx *parser.STIntersectsContext)
 	}
 }
 
-func (v *ParserVisitor) VisitGeometryWithin(ctx *parser.STWithinContext) interface{} {
+func (v *ParserVisitor) VisitSTWithin(ctx *parser.STWithinContext) interface{} {
 	childExpr, err := v.translateIdentifier(ctx.Identifier().GetText())
 	if err != nil {
 		return err

@@ -14,12 +14,15 @@
 #include <google/protobuf/text_format.h>
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "common/Geometry.h"
 #include "common/VectorTrait.h"
 #include "common/EasyAssert.h"
 #include "exec/expression/function/FunctionFactory.h"
+#include "log/Log.h"
 #include "ogr_core.h"
 #include "ogr_geometry.h"
 #include "pb/plan.pb.h"
@@ -223,6 +226,7 @@ ProtoParser::CreateRetrievePlan(const proto::plan::PlanNode& plan_node_proto) {
 
     auto plan_node = RetrievePlanNodeFromProto(plan_node_proto);
 
+    LOG_WARN("CREATED PALNNODE!!");
     retrieve_plan->plan_node_ = std::move(plan_node);
     for (auto field_id_raw : plan_node_proto.output_field_ids()) {
         auto field_id = FieldId(field_id_raw);
@@ -394,15 +398,10 @@ ProtoParser::ParseGISFunctionFilterExprs(
     auto data_type = schema[field_id].get_data_type();
     Assert(data_type == (DataType)columnInfo.data_type());
     const std::string& str = expr_pb.wkt_string();
-    OGRGeometry* geometry = nullptr;
-    OGRGeometryFactory::createFromWkt(str.data(), nullptr, &geometry);
-    Assert(geometry != nullptr);
-    unsigned char* wkb_byte = new unsigned char[geometry->WkbSize()];
-    geometry->exportToWkb(wkbNDR, wkb_byte);
+    Geometry geometry(str.data());
+    LOG_WARN("{}", geometry.to_wkt_string());
     return std::make_shared<expr::GISFunctioinFilterExpr>(
-        columnInfo,
-        expr_pb.op(),
-        std::string(reinterpret_cast<char*>(wkb_byte), geometry->WkbSize()));
+        columnInfo, expr_pb.op(), geometry);
 }
 
 expr::TypedExprPtr
@@ -471,8 +470,11 @@ ProtoParser::ParseExprs(const proto::plan::Expr& expr_pb,
             break;
         }
         case ppe::kGisfunctionFilterExpr: {
+            LOG_WARN("PARSE GIS!!");
             result =
                 ParseGISFunctionFilterExprs(expr_pb.gisfunction_filter_expr());
+            Assert(result != nullptr);
+            LOG_WARN("the result:{}", result->ToString());
             break;
         }
         default: {
@@ -483,6 +485,7 @@ ProtoParser::ParseExprs(const proto::plan::Expr& expr_pb,
         }
     }
     if (type_check(result->type())) {
+        LOG_WARN("passed check");
         return result;
     }
     PanicInfo(
