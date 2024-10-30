@@ -85,7 +85,11 @@ class Geometry {
                                 size_);
     }
 
-    ~Geometry() = default;
+    ~Geometry(){
+        if(geometry_){
+            OGRGeometryFactory::destroyGeometry(geometry_.release());
+        }
+    }
 
     bool
     IsValid() const {
@@ -156,7 +160,7 @@ class Geometry {
  private:
     inline void
     to_wkb_internal() {
-        if (geometry_ && size_ == 0) {
+        if (geometry_) {
             size_ = geometry_->WkbSize();
             wkb_data_ = std::make_unique<unsigned char[]>(size_);
             // little-endian order to save wkb
