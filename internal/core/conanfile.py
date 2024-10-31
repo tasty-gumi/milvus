@@ -80,7 +80,6 @@ class MilvusConan(ConanFile):
         "onetbb:tbbmalloc": False,
         "onetbb:tbbproxy": False,
         "gdal:shared": True,
-        "gdal:fPIC": True,
     }
 
     def configure(self):
