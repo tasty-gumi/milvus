@@ -10,9 +10,7 @@
 // or implied. See the License for the specific language governing permissions and limitations under the License
 #pragma once
 
-#include <gdal.h>
-#include <ogr_geometry.h>
-#include <algorithm>
+#include "ogr_geometry.h"
 #include <memory>
 #include <string_view>
 #include "common/EasyAssert.h"
