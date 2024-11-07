@@ -178,7 +178,7 @@ func GenerateGeometryArray(numRows int) [][]byte {
 	return ret
 }
 
-// milvus client and proxy's insert request input view geomerty data as wkt strings
+// milvus client and proxy's insert request input view geometry data as wkt strings
 func GenerateGeometryWktArray(numRows int) [][]byte {
 	ret := make([][]byte, 0, numRows)
 	const (
