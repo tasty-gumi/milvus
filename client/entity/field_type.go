@@ -85,6 +85,8 @@ func (t FieldType) String() string {
 		return "Array"
 	case FieldTypeJSON:
 		return "JSON"
+	case FieldTypeGeometry:
+		return "Geometry"
 	case FieldTypeBinaryVector:
 		return "[]byte"
 	case FieldTypeFloatVector:
